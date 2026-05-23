@@ -6,7 +6,7 @@ import {
   Video, MessageCircle, TrendingUp, FileText, Star, Check, X,
   Clock, Users, Mail, MessageSquare, Zap, Award, Target,
   ChevronLeft, ChevronRight, Home, BookOpen as BookIcon,
-  BarChart2, CreditCard, Phone, Menu,
+  BarChart2, CreditCard, Phone, GraduationCap,
 } from "lucide-react";
 
 const WHATSAPP_NUMBER = "919876543210";
@@ -35,10 +35,10 @@ export default function PhysicsProLanding() {
   const [hoveredPlan, setHoveredPlan] = useState(null);
   const [slideIndex, setSlideIndex]   = useState(0);
   const [sliding, setSliding]         = useState(false);
-  const [slideDir, setSlideDir]       = useState(1); // 1=next, -1=prev
-  const [mobileMenuOpen, setMobileMenu] = useState(false);
+  const [slideDir, setSlideDir]       = useState(1);
   const autoRef  = useRef(null);
   const sectionRefs = useRef({});
+  const navRef = useRef(null);
 
   const navLinks = [
     { label: "Home",    id: "hero",         Icon: Home       },
@@ -52,10 +52,11 @@ export default function PhysicsProLanding() {
 
   const scrollToSection = useCallback((item) => {
     setActiveNav(item.label);
-    setMobileMenu(false);
     const el = sectionRefs.current[item.id];
     if (el) {
-      const offset = window.innerWidth < 768 ? 0 : 72;
+      const navH = navRef.current ? navRef.current.offsetHeight : 68;
+      const isMobile = window.innerWidth < 768;
+      const offset = isMobile ? 0 : navH;
       const top = el.getBoundingClientRect().top + window.scrollY - offset;
       window.scrollTo({ top, behavior: "smooth" });
     }
@@ -64,10 +65,10 @@ export default function PhysicsProLanding() {
   useEffect(() => {
     const onScroll = () => {
       setScrolled(window.scrollY > 20);
-      const ids = navLinks.map(n => n.id);
-      for (let i = ids.length - 1; i >= 0; i--) {
-        const el = sectionRefs.current[ids[i]];
-        if (el && el.getBoundingClientRect().top <= 120) {
+      const navH = navRef.current ? navRef.current.offsetHeight : 68;
+      for (let i = navLinks.length - 1; i >= 0; i--) {
+        const el = sectionRefs.current[navLinks[i].id];
+        if (el && el.getBoundingClientRect().top <= navH + 40) {
           setActiveNav(navLinks[i].label);
           break;
         }
@@ -103,7 +104,7 @@ export default function PhysicsProLanding() {
     setTimeout(() => {
       setSlideIndex((i) => (i + dir + testimonials.length) % testimonials.length);
       setSliding(false);
-    }, 420);
+    }, 400);
   }, [sliding, testimonials.length]);
 
   useEffect(() => {
@@ -112,7 +113,6 @@ export default function PhysicsProLanding() {
   }, [goTo]);
 
   const resetAuto = () => { clearInterval(autoRef.current); autoRef.current = setInterval(() => goTo(1), 4500); };
-
   const handleNav = (dir) => { goTo(dir); resetAuto(); };
 
   const fadeIn = (id, delay = 0) => ({
@@ -196,15 +196,46 @@ export default function PhysicsProLanding() {
     onBlur:  (e) => { e.target.style.borderColor = errors[field] ? "#fb7185" : "rgba(255,255,255,0.08)"; e.target.style.background = "rgba(255,255,255,0.04)"; },
   });
 
-  // Capsule slider logic — prev / current / next
-  const prev = (slideIndex - 1 + testimonials.length) % testimonials.length;
-  const next = (slideIndex + 1) % testimonials.length;
-  const tPrev = testimonials[prev];
   const tCurr = testimonials[slideIndex];
-  const tNext = testimonials[next];
+
+  // Teacher Photo Card
+  const TeacherPhoto = () => (
+    <div style={{ position: "relative", width: "100%", maxWidth: 420 }}>
+      {/* Glow rings behind */}
+      <div style={{ position: "absolute", inset: -24, borderRadius: "50%", background: `radial-gradient(circle, rgba(201,168,76,0.1) 0%, transparent 65%)`, pointerEvents: "none", zIndex: 0 }} />
+      {/* Main photo card */}
+      <div style={{ position: "relative", zIndex: 1, borderRadius: 24, overflow: "hidden", border: `1.5px solid rgba(201,168,76,0.22)`, boxShadow: "0 24px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04)" }}>
+        <img
+          src="https://images.unsplash.com/photo-1537368910025-700350fe46c7?fm=jpg&q=85&w=600&auto=format&fit=crop&crop=faces,top"
+          alt="Physics teacher"
+          style={{ width: "100%", aspectRatio: "3/4", objectFit: "cover", objectPosition: "center top", display: "block", filter: "brightness(0.88) contrast(1.05)" }}
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = "https://images.unsplash.com/photo-1584471578048-8e3fa4d66b33?fm=jpg&q=85&w=600&auto=format&fit=crop&crop=faces,top";
+          }}
+        />
+        {/* Gradient overlay bottom */}
+        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "45%", background: "linear-gradient(to top, rgba(11,17,32,0.95) 0%, rgba(11,17,32,0.5) 50%, transparent 100%)" }} />
+        {/* Name tag at bottom */}
+        <div style={{ position: "absolute", bottom: 20, left: 20, right: 20 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ width: 36, height: 36, borderRadius: 10, background: `linear-gradient(135deg, ${GOLD}, #e8c96a)`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <GraduationCap size={18} color="#0b1120" />
+            </div>
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 600, color: "#f0f4ff", fontFamily: "'Playfair Display', serif" }}>IIT Alumni Faculty</div>
+              <div style={{ fontSize: 11, color: GOLD, letterSpacing: "0.08em" }}>IIT Delhi · B.Tech Physics</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+   
+    </div>
+  );
 
   return (
-    <div style={{ fontFamily: "'DM Sans', sans-serif", background: "#0b1120", color: "#f0f4ff", overflowX: "hidden", minHeight: "100vh", paddingBottom: 72 }}>
+    <div style={{ fontFamily: "'DM Sans', sans-serif", background: "#0b1120", color: "#f0f4ff", overflowX: "hidden", minHeight: "100vh" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap');
         *{box-sizing:border-box;margin:0;padding:0;}
@@ -216,7 +247,7 @@ export default function PhysicsProLanding() {
         .btn:active{transform:translateY(0) scale(0.97);}
         .nav-link{transition:all 0.18s;cursor:pointer;user-select:none;}
         .nav-link:hover{color:#f0f4ff!important;}
-        .wa-float{position:fixed;bottom:88px;right:20px;z-index:80;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#25d366,#128c7e);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 24px rgba(37,211,102,0.4);transition:all 0.22s;border:none;}
+        .wa-float{position:fixed;bottom:90px;right:20px;z-index:80;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#25d366,#128c7e);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 24px rgba(37,211,102,0.4);transition:all 0.22s;border:none;}
         .wa-float:hover{transform:scale(1.1) translateY(-2px);}
         .wa-float svg{width:24px;height:24px;fill:white;}
         @keyframes spin{to{transform:rotate(360deg);}}
@@ -226,44 +257,64 @@ export default function PhysicsProLanding() {
         @keyframes pulse-glow{0%,100%{opacity:0.4;transform:scale(1);}50%{opacity:0.65;transform:scale(1.03);}}
         .stat-num{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;}
         .features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+        @keyframes slideInRight{from{opacity:0;transform:translateX(50px) scale(0.97);}to{opacity:1;transform:translateX(0) scale(1);}}
+        @keyframes slideInLeft{from{opacity:0;transform:translateX(-50px) scale(0.97);}to{opacity:1;transform:translateX(0) scale(1);}}
+        .anim-in-right{animation:slideInRight 0.4s cubic-bezier(0.4,0,0.2,1) forwards;}
+        .anim-in-left{animation:slideInLeft 0.4s cubic-bezier(0.4,0,0.2,1) forwards;}
+        @keyframes floatUp{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+        .teacher-float{animation:floatUp 5s ease-in-out infinite;}
 
-        /* Slider */
-        .slider-track{display:flex;align-items:stretch;gap:16px;position:relative;}
-        .slide-card{border-radius:20px;padding:28px;flex:0 0 auto;transition:all 0.42s cubic-bezier(0.4,0,0.2,1);}
-        .slide-main{width:100%;max-width:520px;background:rgba(255,255,255,0.04);border:1.5px solid rgba(201,168,76,0.25);position:relative;z-index:2;}
-        .slide-side{width:220px;background:rgba(255,255,255,0.015);border:1px solid rgba(255,255,255,0.06);opacity:0.5;transform:scale(0.94);z-index:1;cursor:pointer;}
-        .slide-side:hover{opacity:0.72;transform:scale(0.96);}
+        /* ── DESKTOP NAV ── */
+        .desktop-nav{
+          position:fixed;top:0;left:0;right:0;z-index:50;
+          padding:0 48px;height:68px;
+          display:flex;align-items:center;justify-content:space-between;
+          background:rgba(11,17,32,0.97);
+          backdrop-filter:blur(24px) saturate(1.8);
+          border-bottom:1px solid rgba(255,255,255,0.06);
+          transition:background 0.35s ease,border-color 0.35s ease,box-shadow 0.35s ease;
+        }
+        .desktop-nav.scrolled{
+          background:rgba(9,14,26,0.99);
+          border-bottom-color:rgba(201,168,76,0.18);
+          box-shadow:0 4px 32px rgba(0,0,0,0.5);
+        }
 
-        /* slide in/out animation */
-        @keyframes slideInRight{from{opacity:0;transform:translateX(60px) scale(0.95);}to{opacity:1;transform:translateX(0) scale(1);}}
-        @keyframes slideInLeft{from{opacity:0;transform:translateX(-60px) scale(0.95);}to{opacity:1;transform:translateX(0) scale(1);}}
-        @keyframes slideOutRight{from{opacity:1;transform:translateX(0);}to{opacity:0;transform:translateX(60px);}}
-        @keyframes slideOutLeft{from{opacity:1;transform:translateX(0);}to{opacity:0;transform:translateX(-60px);}}
-        .anim-in-right{animation:slideInRight 0.42s cubic-bezier(0.4,0,0.2,1) forwards;}
-        .anim-in-left{animation:slideInLeft 0.42s cubic-bezier(0.4,0,0.2,1) forwards;}
-
-        /* Bottom mobile nav */
+        /* ── MOBILE BOTTOM NAV ── */
         .bottom-nav{
           display:none;
           position:fixed;bottom:0;left:0;right:0;z-index:90;
-          background:rgba(11,17,32,0.96);
-          backdrop-filter:blur(20px) saturate(1.8);
-          border-top:1px solid rgba(201,168,76,0.12);
-          padding:8px 0 calc(8px + env(safe-area-inset-bottom));
+          background:rgba(9,14,26,0.97);
+          backdrop-filter:blur(24px) saturate(1.8);
+          border-top:1px solid rgba(201,168,76,0.14);
+          padding:6px 0 calc(6px + env(safe-area-inset-bottom));
+          box-shadow:0 -8px 32px rgba(0,0,0,0.4);
         }
-        .bottom-nav-inner{display:flex;justify-content:space-around;align-items:center;}
-        .bottom-nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 14px;border-radius:12px;cursor:pointer;transition:all 0.18s;border:none;background:transparent;font-family:inherit;}
-        .bottom-nav-item span{font-size:10px;font-weight:500;letter-spacing:0.04em;}
+        .bottom-nav-inner{display:flex;justify-content:space-around;align-items:stretch;}
+        .bottom-nav-item{
+          display:flex;flex-direction:column;align-items:center;justify-content:center;
+          gap:3px;padding:7px 12px 5px;border-radius:14px;
+          cursor:pointer;transition:all 0.22s cubic-bezier(0.22,1,0.36,1);
+          border:none;background:transparent;font-family:inherit;flex:1;
+          position:relative;
+        }
         .bottom-nav-item.active{background:rgba(201,168,76,0.1);}
+        .bottom-nav-item.active::before{
+          content:'';position:absolute;top:-6px;left:50%;transform:translateX(-50%);
+          width:28px;height:3px;border-radius:0 0 3px 3px;
+          background:linear-gradient(90deg,#c9a84c,#e8c96a);
+        }
+        .bottom-nav-item span{font-size:10px;font-weight:500;letter-spacing:0.03em;transition:color 0.18s;}
 
+        /* ── MOBILE ADJUSTMENTS ── */
         @media(max-width:768px){
           .bottom-nav{display:block;}
           .desktop-nav{display:none!important;}
           .features-grid{grid-template-columns:repeat(2,1fr);}
-          .slide-side{display:none;}
-          .slider-track{justify-content:center;}
-          .slide-main{max-width:100%;}
-          .hero-pad{padding:72px 20px 64px!important;}
+          .hero-pad{padding:56px 20px 72px!important;}
+          .hero-inner{flex-direction:column!important;gap:32px!important;}
+          .hero-text{max-width:100%!important;}
+          .hero-img{width:100%!important;max-width:320px!important;margin:0 auto!important;order:2!important;}
           .section-pad{padding:56px 20px!important;}
           .stats-wrap{flex-wrap:wrap;}
           .stat-cell{min-width:50%;flex:1;}
@@ -271,12 +322,28 @@ export default function PhysicsProLanding() {
           .pricing-grid{grid-template-columns:1fr!important;}
           .contact-grid{grid-template-columns:1fr!important;}
           .form-row{grid-template-columns:1fr!important;}
+          .footer-inner{padding:32px 20px!important;}
+          .divider{margin:0 20px!important;}
+          /* mobile slider: only show center card */
+          .slider-side-card{display:none!important;}
+          .slider-center-card{flex:0 0 100%!important;}
+          .wa-float{bottom:88px;right:16px;}
         }
         @media(max-width:480px){
           .features-grid{grid-template-columns:1fr;}
         }
         @media(min-width:769px){
           .wa-float{bottom:28px;right:28px;}
+          .bottom-nav{display:none!important;}
+          /* extra section padding at bottom on desktop not needed */
+        }
+        /* push content below fixed nav */
+        @media(min-width:769px){
+          .page-wrap{padding-top:68px;}
+        }
+        /* page bottom padding for mobile bottom nav */
+        @media(max-width:768px){
+          .page-wrap{padding-bottom:72px;}
         }
       `}</style>
 
@@ -285,15 +352,8 @@ export default function PhysicsProLanding() {
         <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
       </button>
 
-      {/* Desktop Navbar */}
-      <nav className="desktop-nav" style={{
-        position: "sticky", top: 0, zIndex: 50,
-        padding: "16px 48px", display: "flex", alignItems: "center", justifyContent: "space-between",
-        background: scrolled ? "rgba(11,17,32,0.92)" : "transparent",
-        backdropFilter: scrolled ? "blur(20px) saturate(1.6)" : "none",
-        borderBottom: scrolled ? "1px solid rgba(255,255,255,0.06)" : "1px solid transparent",
-        transition: "all 0.35s ease",
-      }}>
+      {/* ── DESKTOP NAVBAR ── */}
+      <nav ref={navRef} className={`desktop-nav${scrolled ? " scrolled" : ""}`}>
         <div style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }} onClick={() => scrollToSection(navLinks[0])}>
           <div style={{ width: 38, height: 38, borderRadius: 10, background: `linear-gradient(135deg, ${GOLD}, #e8c96a)`, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 4px 18px rgba(201,168,76,0.4)` }}>
             <Atom size={18} color="#0b1120" />
@@ -311,7 +371,7 @@ export default function PhysicsProLanding() {
                 fontSize: 13.5, padding: "8px 16px", borderRadius: 8, display: "block",
                 color: activeNav === n.label ? GOLD : "rgba(180,195,230,0.45)",
                 fontWeight: activeNav === n.label ? 500 : 400,
-                borderBottom: activeNav === n.label ? `1.5px solid ${GOLD}` : "1.5px solid transparent",
+                borderBottom: activeNav === n.label ? `2px solid ${GOLD}` : "2px solid transparent",
               }}>{n.label}</span>
             </li>
           ))}
@@ -327,342 +387,349 @@ export default function PhysicsProLanding() {
         </div>
       </nav>
 
-      {/* Mobile Bottom Navbar */}
+      {/* ── MOBILE BOTTOM NAV ── */}
       <nav className="bottom-nav">
         <div className="bottom-nav-inner">
           {navLinks.map((n) => (
             <button key={n.label} className={`bottom-nav-item${activeNav === n.label ? " active" : ""}`} onClick={() => scrollToSection(n)}>
-              <n.Icon size={20} color={activeNav === n.label ? GOLD : "rgba(180,195,230,0.4)"} />
-              <span style={{ color: activeNav === n.label ? GOLD : "rgba(180,195,230,0.4)" }}>{n.label}</span>
+              <n.Icon size={21} color={activeNav === n.label ? GOLD : "rgba(180,195,230,0.35)"} strokeWidth={activeNav === n.label ? 2 : 1.5} />
+              <span style={{ color: activeNav === n.label ? GOLD : "rgba(180,195,230,0.35)" }}>{n.label}</span>
             </button>
           ))}
         </div>
       </nav>
 
-      {/* ── HERO ── */}
-      <section id="hero" ref={registerRef("hero")} data-observe className="hero-pad" style={{ padding: "96px 48px 88px", position: "relative", overflow: "hidden" }}>
-        <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
-          <div style={{ position: "absolute", top: -120, right: "5%", width: 640, height: 640, borderRadius: "50%", background: `radial-gradient(circle, rgba(201,168,76,0.08) 0%, transparent 65%)`, animation: "pulse-glow 7s ease-in-out infinite" }} />
-          <div style={{ position: "absolute", bottom: -60, left: "2%", width: 420, height: 420, borderRadius: "50%", background: `radial-gradient(circle, rgba(79,142,247,0.06) 0%, transparent 65%)` }} />
-          <div className="grid-dots" style={{ position: "absolute", inset: 0, opacity: 0.5 }} />
-          <div style={{ position: "absolute", right: "4%", top: "50%", transform: "translateY(-50%)", opacity: 0.055, pointerEvents: "none" }}>
-            <svg width="400" height="400" viewBox="0 0 420 420" fill="none">
-              <circle cx="210" cy="210" r="38" fill={GOLD}/>
-              <ellipse cx="210" cy="210" rx="178" ry="58" stroke={GOLD} strokeWidth="1.5" fill="none"/>
-              <ellipse cx="210" cy="210" rx="178" ry="58" stroke={GOLD} strokeWidth="1.5" fill="none" transform="rotate(60 210 210)"/>
-              <ellipse cx="210" cy="210" rx="178" ry="58" stroke={GOLD} strokeWidth="1.5" fill="none" transform="rotate(120 210 210)"/>
-              <circle cx="388" cy="210" r="9" fill={GOLD}/><circle cx="121" cy="55" r="9" fill={BLUE}/><circle cx="121" cy="365" r="9" fill={TEAL}/>
-            </svg>
+      <div className="page-wrap">
+        {/* ── HERO ── */}
+        <section id="hero" ref={registerRef("hero")} data-observe className="hero-pad" style={{ padding: "80px 48px 80px", position: "relative", overflow: "hidden" }}>
+          <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
+            <div style={{ position: "absolute", top: -80, right: "8%", width: 560, height: 560, borderRadius: "50%", background: `radial-gradient(circle, rgba(201,168,76,0.07) 0%, transparent 65%)`, animation: "pulse-glow 7s ease-in-out infinite" }} />
+            <div style={{ position: "absolute", bottom: -60, left: "2%", width: 380, height: 380, borderRadius: "50%", background: `radial-gradient(circle, rgba(79,142,247,0.05) 0%, transparent 65%)` }} />
+            <div className="grid-dots" style={{ position: "absolute", inset: 0, opacity: 0.45 }} />
           </div>
-        </div>
-        <div style={{ maxWidth: 700, position: "relative" }}>
-          <div {...fadeIn("hero", 0)}>
-            <div className="tag" style={{ background: GOLD_DIM, border: `1px solid rgba(201,168,76,0.28)`, color: GOLD, marginBottom: 28 }}>
-              <Zap size={11} fill={GOLD} /> Batch 2026 · JEE · NEET · Board Exams — Now Open
+
+          <div className="hero-inner" style={{ maxWidth: 1100, margin: "0 auto", display: "flex", alignItems: "center", gap: 48, position: "relative" }}>
+            {/* Left – text */}
+            <div className="hero-text" style={{ flex: 1, minWidth: 0, maxWidth: 580 }}>
+              <div {...fadeIn("hero", 0)}>
+                <div className="tag" style={{ background: GOLD_DIM, border: `1px solid rgba(201,168,76,0.28)`, color: GOLD, marginBottom: 28 }}>
+                  <Zap size={11} fill={GOLD} /> Batch 2026 · JEE · NEET · Board Exams — Now Open
+                </div>
+              </div>
+              <div {...fadeIn("hero", 0.1)}>
+                <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(38px, 5.5vw, 66px)", fontWeight: 700, lineHeight: 1.08, letterSpacing: "-0.02em", marginBottom: 22, color: "#f0f4ff" }}>
+                  Physics made{" "}
+                  <span style={{ fontStyle: "italic", background: `linear-gradient(135deg, ${GOLD}, #e8c96a)`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>crystal clear.</span>
+                </h1>
+              </div>
+              <div {...fadeIn("hero", 0.2)}>
+                <p style={{ fontSize: 16.5, color: "rgba(180,195,230,0.48)", maxWidth: 470, lineHeight: 1.78, marginBottom: 36 }}>
+                  Live classes, recorded sessions, and 1-on-1 doubt clearing — taught by IIT alumni who've cracked the exact exams you're preparing for.
+                </p>
+              </div>
+              <div {...fadeIn("hero", 0.3)} style={{ display: "flex", gap: 14, flexWrap: "wrap", marginBottom: 52 }}>
+                <button className="btn" onClick={() => openWA("Hi PhysicsPro! I want to enroll.")} style={{ fontSize: 14.5, fontWeight: 600, color: "white", background: "linear-gradient(135deg,#25d366,#1aab55)", border: "none", borderRadius: 12, padding: "14px 28px", display: "inline-flex", alignItems: "center", gap: 9, boxShadow: "0 6px 24px rgba(37,211,102,0.38)" }}>
+                  <MessageSquare size={16} /> Chat on WhatsApp
+                </button>
+                <button className="btn" onClick={() => scrollToSection(navLinks[1])} style={{ fontSize: 14.5, fontWeight: 500, color: GOLD, background: "transparent", border: `1px solid rgba(201,168,76,0.3)`, borderRadius: 12, padding: "14px 26px", display: "inline-flex", alignItems: "center", gap: 9 }}>
+                  View Courses <ArrowRight size={15} />
+                </button>
+              </div>
+              <div {...fadeIn("hero", 0.4)} style={{ display: "flex", gap: 0, flexWrap: "wrap", borderRadius: 16, overflow: "hidden", border: "1px solid rgba(255,255,255,0.07)", width: "fit-content", background: "rgba(255,255,255,0.02)" }} className="stats-wrap">
+                {[{ n: "12,400+", l: "Students", accent: GOLD }, { n: "340+", l: "IIT Selections", accent: BLUE }, { n: "98%", l: "Pass Rate", accent: TEAL }, { n: "4.9 ★", l: "Rating", accent: VIOLET }].map((s, i, arr) => (
+                  <div key={i} className="stat-cell" style={{ padding: "18px 24px", textAlign: "center", borderRight: i < arr.length - 1 ? "1px solid rgba(255,255,255,0.06)" : "none" }}>
+                    <div className="stat-num" style={{ color: s.accent }}>{s.n}</div>
+                    <div style={{ fontSize: 10.5, color: "rgba(180,195,230,0.35)", marginTop: 4, textTransform: "uppercase", letterSpacing: "0.1em" }}>{s.l}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right – Teacher photo */}
+            <div className="hero-img" style={{ flex: "0 0 360px", width: 360, position: "relative" }}>
+              <TeacherPhoto />
             </div>
           </div>
-          <div {...fadeIn("hero", 0.1)}>
-            <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(40px, 6.5vw, 70px)", fontWeight: 700, lineHeight: 1.08, letterSpacing: "-0.02em", marginBottom: 24, color: "#f0f4ff" }}>
-              Physics made{" "}
-              <span style={{ fontStyle: "italic", background: `linear-gradient(135deg, ${GOLD}, #e8c96a)`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>crystal clear.</span>
-            </h1>
+        </section>
+
+        <div className="divider" style={{ height: 1, background: `linear-gradient(90deg, transparent, rgba(201,168,76,0.18), transparent)`, margin: "0 48px" }} />
+
+        {/* ── COURSES ── */}
+        <section id="courses" ref={registerRef("courses")} data-observe className="section-pad" style={{ padding: "72px 48px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: 24, marginBottom: 44 }}>
+            <div {...fadeIn("courses", 0)}>
+              <div className="tag" style={{ background: GOLD_DIM, border: `1px solid rgba(201,168,76,0.22)`, color: GOLD, marginBottom: 14 }}><BookOpen size={11} /> Courses</div>
+              <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(28px,4vw,40px)", fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1.15, color: "#f0f4ff" }}>Everything you need<br />to score top ranks.</h2>
+            </div>
+            <div {...fadeIn("courses", 0.1)} style={{ fontSize: 14, color: "rgba(180,195,230,0.38)", maxWidth: 320, lineHeight: 1.68 }}>From mechanics to modern physics — structured, exam-focused, and taught with absolute clarity.</div>
           </div>
-          <div {...fadeIn("hero", 0.2)}>
-            <p style={{ fontSize: 17, color: "rgba(180,195,230,0.5)", maxWidth: 490, lineHeight: 1.78, marginBottom: 40 }}>
-              Live classes, recorded sessions, and 1-on-1 doubt clearing — taught by IIT alumni who've cracked the exact exams you're preparing for.
-            </p>
-          </div>
-          <div {...fadeIn("hero", 0.3)} style={{ display: "flex", gap: 14, flexWrap: "wrap", marginBottom: 64 }}>
-            <button className="btn" onClick={() => openWA("Hi PhysicsPro! I want to enroll.")} style={{ fontSize: 14.5, fontWeight: 600, color: "white", background: "linear-gradient(135deg,#25d366,#1aab55)", border: "none", borderRadius: 12, padding: "14px 30px", display: "inline-flex", alignItems: "center", gap: 9, boxShadow: "0 6px 24px rgba(37,211,102,0.38)" }}>
-              <MessageSquare size={16} /> Chat on WhatsApp
-            </button>
-            <button className="btn" onClick={() => scrollToSection(navLinks[1])} style={{ fontSize: 14.5, fontWeight: 500, color: GOLD, background: "transparent", border: `1px solid rgba(201,168,76,0.3)`, borderRadius: 12, padding: "14px 28px", display: "inline-flex", alignItems: "center", gap: 9 }}>
-              View Courses <ArrowRight size={15} />
-            </button>
-          </div>
-          <div {...fadeIn("hero", 0.4)} style={{ display: "flex", gap: 0, flexWrap: "wrap", borderRadius: 16, overflow: "hidden", border: "1px solid rgba(255,255,255,0.07)", width: "fit-content", background: "rgba(255,255,255,0.02)" }} className="stats-wrap">
-            {[{ n: "12,400+", l: "Students", accent: GOLD }, { n: "340+", l: "IIT Selections", accent: BLUE }, { n: "98%", l: "Pass Rate", accent: TEAL }, { n: "4.9 ★", l: "Rating", accent: VIOLET }].map((s, i, arr) => (
-              <div key={i} className="stat-cell" style={{ padding: "20px 28px", textAlign: "center", borderRight: i < arr.length - 1 ? "1px solid rgba(255,255,255,0.06)" : "none" }}>
-                <div className="stat-num" style={{ color: s.accent }}>{s.n}</div>
-                <div style={{ fontSize: 10.5, color: "rgba(180,195,230,0.35)", marginTop: 4, textTransform: "uppercase", letterSpacing: "0.1em" }}>{s.l}</div>
+          <div className="courses-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 16 }}>
+            {courses.map((c, i) => (
+              <div key={i} {...fadeIn("courses", 0.1 + i * 0.1)} style={{ background: c.featured ? `rgba(201,168,76,0.05)` : "rgba(255,255,255,0.025)", border: c.featured ? `1px solid rgba(201,168,76,0.28)` : "1px solid rgba(255,255,255,0.07)", borderRadius: 18, padding: 28, position: "relative", overflow: "hidden", transition: "transform 0.25s, box-shadow 0.25s" }}
+                onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-5px)"; e.currentTarget.style.boxShadow = `0 12px 40px rgba(0,0,0,0.3)`; }}
+                onMouseLeave={(e) => { e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = ""; }}>
+                {c.featured && <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, ${GOLD}, transparent)`, borderRadius: "18px 18px 0 0" }} />}
+                <span style={{ fontSize: 10.5, fontWeight: 600, letterSpacing: "0.07em", color: c.accent, background: c.accentDim, border: `1px solid ${c.accent}30`, borderRadius: 7, padding: "4px 10px", display: "inline-block", marginBottom: 20, textTransform: "uppercase" }}>{c.badge}</span>
+                <div style={{ width: 46, height: 46, borderRadius: 13, background: c.accentDim, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 18, border: `1px solid ${c.accent}20` }}><c.Icon size={22} color={c.accent} /></div>
+                <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 19, fontWeight: 600, color: "#f0f4ff", marginBottom: 10, lineHeight: 1.3 }}>{c.title}</div>
+                <div style={{ fontSize: 13.5, color: "rgba(180,195,230,0.42)", lineHeight: 1.68, marginBottom: 22 }}>{c.desc}</div>
+                <div style={{ display: "flex", gap: 18, marginBottom: 22 }}>
+                  {[{ Icon: Clock, text: c.hours }, { Icon: Users, text: c.enrolled }].map(({ Icon, text }, j) => (
+                    <span key={j} style={{ fontSize: 12, color: "rgba(180,195,230,0.32)", display: "flex", alignItems: "center", gap: 5 }}><Icon size={12} color={c.accent} /> {text}</span>
+                  ))}
+                </div>
+                <button className="btn" onClick={() => openWA(`Hi! I'm interested in the ${c.title} course.`)} style={{ width: "100%", padding: "11px", borderRadius: 11, fontSize: 13, fontWeight: 600, background: c.featured ? "linear-gradient(135deg, #25d366, #1aab55)" : "rgba(255,255,255,0.04)", color: c.featured ? "white" : "rgba(180,195,230,0.45)", border: c.featured ? "none" : "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center", gap: 7, boxShadow: c.featured ? "0 4px 18px rgba(37,211,102,0.28)" : "none" }}>
+                  <MessageSquare size={13} /> Enquire on WhatsApp
+                </button>
               </div>
             ))}
           </div>
-        </div>
-      </section>
+        </section>
 
-      <div style={{ height: 1, background: `linear-gradient(90deg, transparent, rgba(201,168,76,0.18), transparent)`, margin: "0 48px" }} />
+        <div className="divider" style={{ height: 1, background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent)", margin: "0 48px" }} />
 
-      {/* ── COURSES ── */}
-      <section id="courses" ref={registerRef("courses")} data-observe className="section-pad" style={{ padding: "72px 48px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: 24, marginBottom: 44 }}>
-          <div {...fadeIn("courses", 0)}>
-            <div className="tag" style={{ background: GOLD_DIM, border: `1px solid rgba(201,168,76,0.22)`, color: GOLD, marginBottom: 14 }}><BookOpen size={11} /> Courses</div>
-            <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(28px,4vw,40px)", fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1.15, color: "#f0f4ff" }}>Everything you need<br />to score top ranks.</h2>
+        {/* ── FEATURES ── */}
+        <section id="features" data-observe className="section-pad" style={{ padding: "72px 48px" }}>
+          <div {...fadeIn("features", 0)} style={{ marginBottom: 44 }}>
+            <div className="tag" style={{ background: GOLD_DIM, border: `1px solid rgba(201,168,76,0.22)`, color: GOLD, marginBottom: 14 }}><Star size={11} fill={GOLD} /> Why PhysicsPro</div>
+            <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(28px,4vw,40px)", fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1.15, color: "#f0f4ff" }}>Learning that actually<br />moves the needle.</h2>
           </div>
-          <div {...fadeIn("courses", 0.1)} style={{ fontSize: 14, color: "rgba(180,195,230,0.38)", maxWidth: 320, lineHeight: 1.68 }}>From mechanics to modern physics — structured, exam-focused, and taught with absolute clarity.</div>
-        </div>
-        <div className="courses-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 16 }}>
-          {courses.map((c, i) => (
-            <div key={i} className="btn" {...fadeIn("courses", 0.1 + i * 0.1)} style={{ background: c.featured ? `rgba(201,168,76,0.05)` : "rgba(255,255,255,0.025)", border: c.featured ? `1px solid rgba(201,168,76,0.28)` : "1px solid rgba(255,255,255,0.07)", borderRadius: 18, padding: 28, position: "relative", overflow: "hidden", transition: "transform 0.25s, box-shadow 0.25s" }}
-              onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-5px)"; e.currentTarget.style.boxShadow = `0 12px 40px rgba(0,0,0,0.3)`; }}
-              onMouseLeave={(e) => { e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = ""; }}>
-              {c.featured && <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, ${GOLD}, transparent)`, borderRadius: "18px 18px 0 0" }} />}
-              <span style={{ fontSize: 10.5, fontWeight: 600, letterSpacing: "0.07em", color: c.accent, background: c.accentDim, border: `1px solid ${c.accent}30`, borderRadius: 7, padding: "4px 10px", display: "inline-block", marginBottom: 20, textTransform: "uppercase" }}>{c.badge}</span>
-              <div style={{ width: 46, height: 46, borderRadius: 13, background: c.accentDim, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 18, border: `1px solid ${c.accent}20` }}><c.Icon size={22} color={c.accent} /></div>
-              <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 19, fontWeight: 600, color: "#f0f4ff", marginBottom: 10, lineHeight: 1.3 }}>{c.title}</div>
-              <div style={{ fontSize: 13.5, color: "rgba(180,195,230,0.42)", lineHeight: 1.68, marginBottom: 22 }}>{c.desc}</div>
-              <div style={{ display: "flex", gap: 18, marginBottom: 22 }}>
-                {[{ Icon: Clock, text: c.hours }, { Icon: Users, text: c.enrolled }].map(({ Icon, text }, j) => (
-                  <span key={j} style={{ fontSize: 12, color: "rgba(180,195,230,0.32)", display: "flex", alignItems: "center", gap: 5 }}><Icon size={12} color={c.accent} /> {text}</span>
-                ))}
+          <div className="features-grid">
+            {features.map((f, i) => (
+              <div key={i} {...fadeIn("features", 0.06 + i * 0.07)} style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 16, padding: "26px 24px", position: "relative", overflow: "hidden", transition: "transform 0.22s, border-color 0.22s" }}
+                onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.borderColor = `${f.accent}30`; }}
+                onMouseLeave={(e) => { e.currentTarget.style.transform = ""; e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)"; }}>
+                <div style={{ position: "absolute", top: -20, left: -20, width: 72, height: 72, borderRadius: "50%", background: `${f.accent}10`, pointerEvents: "none" }} />
+                <div style={{ width: 44, height: 44, borderRadius: 12, background: `${f.accent}14`, border: `1px solid ${f.accent}28`, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 18 }}><f.Icon size={20} color={f.accent} /></div>
+                <div style={{ fontSize: 15, fontWeight: 600, color: "#f0f4ff", marginBottom: 9, fontFamily: "'Playfair Display', serif", lineHeight: 1.3 }}>{f.title}</div>
+                <div style={{ fontSize: 13.5, color: "rgba(180,195,230,0.4)", lineHeight: 1.68 }}>{f.desc}</div>
               </div>
-              <button className="btn" onClick={() => openWA(`Hi! I'm interested in the ${c.title} course.`)} style={{ width: "100%", padding: "11px", borderRadius: 11, fontSize: 13, fontWeight: 600, background: c.featured ? "linear-gradient(135deg, #25d366, #1aab55)" : "rgba(255,255,255,0.04)", color: c.featured ? "white" : "rgba(180,195,230,0.45)", border: c.featured ? "none" : "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center", gap: 7, boxShadow: c.featured ? "0 4px 18px rgba(37,211,102,0.28)" : "none" }}>
-                <MessageSquare size={13} /> Enquire on WhatsApp
+            ))}
+          </div>
+        </section>
+
+        <div className="divider" style={{ height: 1, background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent)", margin: "0 48px" }} />
+
+        {/* ── TESTIMONIALS ── */}
+        <section id="testimonials" ref={registerRef("testimonials")} data-observe className="section-pad" style={{ padding: "72px 48px" }}>
+          <div {...fadeIn("testimonials", 0)} style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: 20, marginBottom: 36 }}>
+            <div>
+              <div className="tag" style={{ background: BLUE_DIM, border: `1px solid rgba(79,142,247,0.22)`, color: BLUE, marginBottom: 14 }}><Award size={11} /> Student Results</div>
+              <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(28px,4vw,40px)", fontWeight: 700, letterSpacing: "-0.02em", color: "#f0f4ff" }}>Students who made it.</h2>
+            </div>
+            <div style={{ display: "flex", gap: 10 }}>
+              <button className="btn" onClick={() => handleNav(-1)} style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(180,195,230,0.6)" }}>
+                <ChevronLeft size={20} />
+              </button>
+              <button className="btn" onClick={() => handleNav(1)} style={{ width: 44, height: 44, borderRadius: 12, background: GOLD_DIM, border: `1px solid rgba(201,168,76,0.28)`, display: "flex", alignItems: "center", justifyContent: "center", color: GOLD }}>
+                <ChevronRight size={20} />
               </button>
             </div>
-          ))}
-        </div>
-      </section>
-
-      <div style={{ height: 1, background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent)", margin: "0 48px" }} />
-
-      {/* ── FEATURES 3+3 ── */}
-      <section id="features" data-observe className="section-pad" style={{ padding: "72px 48px" }}>
-        <div {...fadeIn("features", 0)} style={{ marginBottom: 44 }}>
-          <div className="tag" style={{ background: GOLD_DIM, border: `1px solid rgba(201,168,76,0.22)`, color: GOLD, marginBottom: 14 }}><Star size={11} fill={GOLD} /> Why PhysicsPro</div>
-          <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(28px,4vw,40px)", fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1.15, color: "#f0f4ff" }}>Learning that actually<br />moves the needle.</h2>
-        </div>
-        <div className="features-grid">
-          {features.map((f, i) => (
-            <div key={i} {...fadeIn("features", 0.06 + i * 0.07)} style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 16, padding: "26px 24px", position: "relative", overflow: "hidden", transition: "transform 0.22s, border-color 0.22s" }}
-              onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.borderColor = `${f.accent}30`; }}
-              onMouseLeave={(e) => { e.currentTarget.style.transform = ""; e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)"; }}>
-              <div style={{ position: "absolute", top: -20, left: -20, width: 72, height: 72, borderRadius: "50%", background: `${f.accent}10`, pointerEvents: "none" }} />
-              <div style={{ width: 44, height: 44, borderRadius: 12, background: `${f.accent}14`, border: `1px solid ${f.accent}28`, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 18 }}><f.Icon size={20} color={f.accent} /></div>
-              <div style={{ fontSize: 15, fontWeight: 600, color: "#f0f4ff", marginBottom: 9, fontFamily: "'Playfair Display', serif", lineHeight: 1.3 }}>{f.title}</div>
-              <div style={{ fontSize: 13.5, color: "rgba(180,195,230,0.4)", lineHeight: 1.68 }}>{f.desc}</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <div style={{ height: 1, background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent)", margin: "0 48px" }} />
-
-      {/* ── TESTIMONIALS — CAPSULE SLIDER ── */}
-      <section id="testimonials" ref={registerRef("testimonials")} data-observe className="section-pad" style={{ padding: "72px 48px" }}>
-        <div {...fadeIn("testimonials", 0)} style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: 20, marginBottom: 44 }}>
-          <div>
-            <div className="tag" style={{ background: BLUE_DIM, border: `1px solid rgba(79,142,247,0.22)`, color: BLUE, marginBottom: 14 }}><Award size={11} /> Student Results</div>
-            <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(28px,4vw,40px)", fontWeight: 700, letterSpacing: "-0.02em", color: "#f0f4ff" }}>Students who made it.</h2>
           </div>
-          {/* Nav arrows */}
-          <div style={{ display: "flex", gap: 10 }}>
-            <button className="btn" onClick={() => handleNav(-1)} style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(180,195,230,0.6)" }}>
-              <ChevronLeft size={20} />
-            </button>
-            <button className="btn" onClick={() => handleNav(1)} style={{ width: 44, height: 44, borderRadius: 12, background: GOLD_DIM, border: `1px solid rgba(201,168,76,0.28)`, display: "flex", alignItems: "center", justifyContent: "center", color: GOLD }}>
-              <ChevronRight size={20} />
-            </button>
-          </div>
-        </div>
 
-        {/* Capsule slider */}
-        <div style={{ position: "relative", overflow: "hidden" }}>
-          <div className="slider-track" style={{ display: "flex", alignItems: "stretch", gap: 16 }}>
-            {/* Prev ghost */}
-            <div className="slide-card slide-side" onClick={() => handleNav(-1)} style={{ display: "flex", flexDirection: "column", justifyContent: "center", minHeight: 280 }}>
-              <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 44, lineHeight: 0.8, color: `${tPrev.accent}15`, marginBottom: 12, fontStyle: "italic" }}>"</div>
-              <p style={{ fontSize: 13, color: "rgba(180,195,230,0.4)", lineHeight: 1.65, fontStyle: "italic", marginBottom: 20, display: "-webkit-box", WebkitLineClamp: 4, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{tPrev.text}</p>
-              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <div style={{ width: 32, height: 32, borderRadius: "50%", background: `${tPrev.accent}18`, border: `2px solid ${tPrev.accent}38`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: tPrev.accent }}>{tPrev.initials}</div>
-                <div style={{ fontSize: 12, fontWeight: 600, color: "rgba(180,195,230,0.45)", fontFamily: "'Playfair Display', serif" }}>{tPrev.name}</div>
+          {/* ── COMPACT 3-CARD SLIDER ── */}
+          <div style={{ position: "relative", overflow: "hidden" }}>
+            {/* track */}
+            <div style={{ display: "flex", gap: 16, transition: "none" }}>
+              {[-1, 0, 1].map((offset) => {
+                const idx = (slideIndex + offset + testimonials.length) % testimonials.length;
+                const t = testimonials[idx];
+                const isCenter = offset === 0;
+                return (
+                  <div
+                    key={idx + "-" + offset}
+                    onClick={() => !isCenter && handleNav(offset)}
+                    className={isCenter && sliding ? (slideDir === 1 ? "anim-in-right" : "anim-in-left") : ""}
+                    style={{
+                      flex: isCenter ? "0 0 calc(60% - 8px)" : "0 0 calc(20% - 8px)",
+                      borderRadius: 16,
+                      padding: isCenter ? "24px 24px 20px" : "20px 16px 16px",
+                      background: isCenter ? "rgba(255,255,255,0.04)" : "rgba(255,255,255,0.015)",
+                      border: isCenter ? `1.5px solid ${t.accent}30` : "1px solid rgba(255,255,255,0.05)",
+                      position: "relative",
+                      overflow: "hidden",
+                      cursor: isCenter ? "default" : "pointer",
+                      opacity: isCenter ? 1 : 0.45,
+                      transform: isCenter ? "scale(1)" : "scale(0.96)",
+                      transition: "all 0.35s cubic-bezier(0.4,0,0.2,1)",
+                      flexShrink: 0,
+                    }}
+                  >
+                    {/* accent top line on active */}
+                    {isCenter && <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, ${t.accent}, transparent)`, borderRadius: "16px 16px 0 0" }} />}
+
+                    {/* score badge */}
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: isCenter ? 14 : 10 }}>
+                      <div style={{ width: isCenter ? 38 : 30, height: isCenter ? 38 : 30, borderRadius: "50%", background: `${t.accent}18`, border: `1.5px solid ${t.accent}35`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: isCenter ? 12 : 10, fontWeight: 700, color: t.accent, flexShrink: 0 }}>{t.initials}</div>
+                      {isCenter && <div style={{ background: `${t.accent}18`, border: `1px solid ${t.accent}35`, borderRadius: 8, padding: "4px 10px", fontSize: 12, fontWeight: 700, color: t.accent, fontFamily: "'Playfair Display', serif" }}>{t.score}</div>}
+                    </div>
+
+                    {/* quote text */}
+                    <p style={{ fontSize: isCenter ? 14 : 11.5, color: isCenter ? "rgba(180,195,230,0.62)" : "rgba(180,195,230,0.4)", lineHeight: 1.7, marginBottom: isCenter ? 16 : 10, fontStyle: "italic", display: "-webkit-box", WebkitLineClamp: isCenter ? 4 : 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{t.text}</p>
+
+                    {/* author */}
+                    <div>
+                      <div style={{ fontSize: isCenter ? 13 : 11, fontWeight: 600, color: isCenter ? "#f0f4ff" : "rgba(180,195,230,0.35)", fontFamily: "'Playfair Display', serif" }}>{t.name}</div>
+                      {isCenter && <div style={{ fontSize: 11, color: "rgba(180,195,230,0.28)", marginTop: 2 }}>{t.sub}</div>}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Dot indicators */}
+          <div style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 20 }}>
+            {testimonials.map((_, i) => (
+              <button key={i} className="btn" onClick={() => { setSlideDir(i > slideIndex ? 1 : -1); setSliding(true); setTimeout(() => { setSlideIndex(i); setSliding(false); }, 400); resetAuto(); }} style={{ width: i === slideIndex ? 24 : 8, height: 8, borderRadius: 4, background: i === slideIndex ? GOLD : "rgba(255,255,255,0.15)", border: "none", transition: "all 0.3s cubic-bezier(0.4,0,0.2,1)", padding: 0 }} />
+            ))}
+          </div>
+        </section>
+
+        <div className="divider" style={{ height: 1, background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent)", margin: "0 48px" }} />
+
+        {/* ── PRICING ── */}
+        <section id="pricing" ref={registerRef("pricing")} data-observe className="section-pad" style={{ padding: "72px 48px" }}>
+          <div {...fadeIn("pricing", 0)} style={{ marginBottom: 44 }}>
+            <div className="tag" style={{ background: TEAL_DIM, border: `1px solid rgba(45,212,191,0.22)`, color: TEAL, marginBottom: 14 }}><Zap size={11} /> Pricing</div>
+            <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(28px,4vw,40px)", fontWeight: 700, letterSpacing: "-0.02em", color: "#f0f4ff", marginBottom: 8 }}>Simple, honest pricing.</h2>
+            <p style={{ fontSize: 14.5, color: "rgba(180,195,230,0.38)" }}>No hidden fees. Cancel anytime.</p>
+          </div>
+          <div className="pricing-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16 }}>
+            {plans.map((plan, i) => (
+              <div key={i} {...fadeIn("pricing", 0.1 + i * 0.1)} onMouseEnter={() => setHoveredPlan(i)} onMouseLeave={() => setHoveredPlan(null)} style={{ background: plan.popular ? "rgba(201,168,76,0.05)" : "rgba(255,255,255,0.025)", border: plan.popular ? `1px solid rgba(201,168,76,0.32)` : "1px solid rgba(255,255,255,0.07)", borderRadius: 18, padding: 28, display: "flex", flexDirection: "column", position: "relative", overflow: "hidden", transform: hoveredPlan === i ? "translateY(-5px)" : "translateY(0)", transition: "transform 0.25s" }}>
+                {plan.popular && (
+                  <>
+                    <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, ${GOLD}, #e8c96a)`, borderRadius: "18px 18px 0 0" }} />
+                    <span className="tag" style={{ background: GOLD_DIM, border: `1px solid rgba(201,168,76,0.3)`, color: GOLD, marginBottom: 16, alignSelf: "flex-start" }}>Most Popular</span>
+                  </>
+                )}
+                {!plan.popular && <div style={{ height: 8 }} />}
+                <div style={{ fontSize: 12.5, color: "rgba(180,195,230,0.38)", fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 10 }}>{plan.name}</div>
+                <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 42, fontWeight: 700, color: "#f0f4ff", lineHeight: 1, marginBottom: 4 }}>{plan.price}</div>
+                <div style={{ fontSize: 12.5, color: "rgba(180,195,230,0.28)", marginBottom: 28 }}>{plan.period}</div>
+                <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: 11, marginBottom: 28, flex: 1 }}>
+                  {plan.features.map((f, j) => (
+                    <li key={j} style={{ fontSize: 13.5, color: f.ok ? "rgba(180,195,230,0.6)" : "rgba(180,195,230,0.2)", display: "flex", alignItems: "center", gap: 10 }}>
+                      {f.ok ? <div style={{ width: 20, height: 20, borderRadius: "50%", background: TEAL_DIM, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Check size={11} color={TEAL} /></div>
+                             : <div style={{ width: 20, height: 20, borderRadius: "50%", background: "rgba(255,255,255,0.04)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><X size={11} color="rgba(180,195,230,0.2)" /></div>}
+                      {f.text}
+                    </li>
+                  ))}
+                </ul>
+                <button className="btn" onClick={() => openWA(`Hi! I'd like to subscribe to the PhysicsPro ${plan.name} plan.`)} style={{ width: "100%", padding: 13, borderRadius: 11, fontSize: 13.5, fontWeight: 600, background: plan.popular ? `linear-gradient(135deg, ${GOLD}, #e8c96a)` : "rgba(255,255,255,0.05)", color: plan.popular ? "#0b1120" : "rgba(180,195,230,0.5)", border: plan.popular ? "none" : "1px solid rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", gap: 7, boxShadow: plan.popular ? `0 6px 22px rgba(201,168,76,0.32)` : "none" }}>
+                  <MessageSquare size={14} /> {plan.popular ? "Enroll Now" : plan.price === "Free" ? "Get Started" : "Get Annual"}
+                </button>
               </div>
+            ))}
+          </div>
+        </section>
+
+        <div className="divider" style={{ height: 1, background: `linear-gradient(90deg, transparent, rgba(201,168,76,0.15), transparent)`, margin: "0 48px" }} />
+
+        {/* ── CONTACT ── */}
+        <section id="contact" ref={registerRef("contact")} data-observe className="section-pad" style={{ padding: "72px 48px" }}>
+          <div className="contact-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 56, alignItems: "start" }}>
+            <div {...fadeIn("contact", 0)}>
+              <div className="tag" style={{ background: GOLD_DIM, border: `1px solid rgba(201,168,76,0.22)`, color: GOLD, marginBottom: 16 }}>Contact Us</div>
+              <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(28px,4vw,40px)", fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1.15, color: "#f0f4ff", marginBottom: 16 }}>Got questions?<br />We're one tap away.</h2>
+              <p style={{ fontSize: 15, color: "rgba(180,195,230,0.38)", lineHeight: 1.78, marginBottom: 40 }}>Fill the form and we'll reach you instantly via WhatsApp or email.</p>
             </div>
 
-            {/* Main card */}
-            <div className={`slide-card slide-main ${sliding ? (slideDir === 1 ? "anim-in-right" : "anim-in-left") : ""}`} style={{ display: "flex", flexDirection: "column", minHeight: 320, flex: 1, maxWidth: 600 }}>
-              {/* Top accent line */}
-              <div style={{ position: "absolute", top: 0, left: 28, right: 28, height: 2, background: `linear-gradient(90deg, ${tCurr.accent}, transparent)`, borderRadius: 2 }} />
-              {/* Score badge */}
-              <div style={{ position: "absolute", top: 18, right: 20 }}>
-                <div style={{ background: `${tCurr.accent}18`, border: `1px solid ${tCurr.accent}38`, borderRadius: 10, padding: "5px 12px", fontSize: 13, fontWeight: 700, color: tCurr.accent, fontFamily: "'Playfair Display', serif" }}>{tCurr.score}</div>
-              </div>
-              <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 56, lineHeight: 0.8, color: `${tCurr.accent}18`, marginBottom: 14, fontStyle: "italic" }}>"</div>
-              <p style={{ fontSize: 15.5, color: "rgba(180,195,230,0.62)", lineHeight: 1.8, marginBottom: 32, fontStyle: "italic", flex: 1 }}>{tCurr.text}</p>
-              <div style={{ display: "flex", alignItems: "center", gap: 14, borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 20 }}>
-                <div style={{ width: 46, height: 46, borderRadius: "50%", background: `${tCurr.accent}18`, border: `2px solid ${tCurr.accent}40`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 700, color: tCurr.accent, flexShrink: 0 }}>{tCurr.initials}</div>
-                <div>
-                  <div style={{ fontSize: 15, fontWeight: 600, color: "#f0f4ff", fontFamily: "'Playfair Display', serif" }}>{tCurr.name}</div>
-                  <div style={{ fontSize: 12, color: "rgba(180,195,230,0.3)", marginTop: 3 }}>{tCurr.sub}</div>
+            <div {...fadeIn("contact", 0.18)}>
+              {submitted ? (
+                <div style={{ background: TEAL_DIM, border: `1px solid rgba(45,212,191,0.22)`, borderRadius: 18, padding: "40px 28px", textAlign: "center" }}>
+                  <div style={{ width: 52, height: 52, borderRadius: "50%", background: TEAL_DIM, border: `2px solid rgba(45,212,191,0.3)`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}><Check size={24} color={TEAL} /></div>
+                  <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 20, fontWeight: 700, color: "#f0f4ff", marginBottom: 8 }}>Message sent!</div>
+                  <p style={{ fontSize: 13.5, color: "rgba(180,195,230,0.42)", lineHeight: 1.65, marginBottom: 20 }}>Our team will reply shortly.</p>
+                  <button className="btn" onClick={() => { setSubmitted(false); setForm({ name: "", phone: "", email: "", course: "", message: "" }); }} style={{ fontSize: 13, color: "rgba(180,195,230,0.45)", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 9, padding: "9px 22px" }}>Send another</button>
                 </div>
-              </div>
-            </div>
-
-            {/* Next ghost */}
-            <div className="slide-card slide-side" onClick={() => handleNav(1)} style={{ display: "flex", flexDirection: "column", justifyContent: "center", minHeight: 280 }}>
-              <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 44, lineHeight: 0.8, color: `${tNext.accent}15`, marginBottom: 12, fontStyle: "italic" }}>"</div>
-              <p style={{ fontSize: 13, color: "rgba(180,195,230,0.4)", lineHeight: 1.65, fontStyle: "italic", marginBottom: 20, display: "-webkit-box", WebkitLineClamp: 4, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{tNext.text}</p>
-              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <div style={{ width: 32, height: 32, borderRadius: "50%", background: `${tNext.accent}18`, border: `2px solid ${tNext.accent}38`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: tNext.accent }}>{tNext.initials}</div>
-                <div style={{ fontSize: 12, fontWeight: 600, color: "rgba(180,195,230,0.45)", fontFamily: "'Playfair Display', serif" }}>{tNext.name}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Dot indicators */}
-        <div style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 28 }}>
-          {testimonials.map((_, i) => (
-            <button key={i} className="btn" onClick={() => { setSlideDir(i > slideIndex ? 1 : -1); setSliding(true); setTimeout(() => { setSlideIndex(i); setSliding(false); }, 420); resetAuto(); }} style={{ width: i === slideIndex ? 24 : 8, height: 8, borderRadius: 4, background: i === slideIndex ? GOLD : "rgba(255,255,255,0.15)", border: "none", transition: "all 0.3s cubic-bezier(0.4,0,0.2,1)", padding: 0 }} />
-          ))}
-        </div>
-      </section>
-
-      <div style={{ height: 1, background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent)", margin: "0 48px" }} />
-
-      {/* ── PRICING ── */}
-      <section id="pricing" ref={registerRef("pricing")} data-observe className="section-pad" style={{ padding: "72px 48px" }}>
-        <div {...fadeIn("pricing", 0)} style={{ marginBottom: 44 }}>
-          <div className="tag" style={{ background: TEAL_DIM, border: `1px solid rgba(45,212,191,0.22)`, color: TEAL, marginBottom: 14 }}><Zap size={11} /> Pricing</div>
-          <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(28px,4vw,40px)", fontWeight: 700, letterSpacing: "-0.02em", color: "#f0f4ff", marginBottom: 8 }}>Simple, honest pricing.</h2>
-          <p style={{ fontSize: 14.5, color: "rgba(180,195,230,0.38)" }}>No hidden fees. Cancel anytime.</p>
-        </div>
-        <div className="pricing-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16 }}>
-          {plans.map((plan, i) => (
-            <div key={i} {...fadeIn("pricing", 0.1 + i * 0.1)} onMouseEnter={() => setHoveredPlan(i)} onMouseLeave={() => setHoveredPlan(null)} style={{ background: plan.popular ? "rgba(201,168,76,0.05)" : "rgba(255,255,255,0.025)", border: plan.popular ? `1px solid rgba(201,168,76,0.32)` : "1px solid rgba(255,255,255,0.07)", borderRadius: 18, padding: 28, display: "flex", flexDirection: "column", position: "relative", overflow: "hidden", transform: hoveredPlan === i ? "translateY(-5px)" : "translateY(0)", transition: "transform 0.25s" }}>
-              {plan.popular && (
-                <>
-                  <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, ${GOLD}, #e8c96a)`, borderRadius: "18px 18px 0 0" }} />
-                  <span className="tag" style={{ background: GOLD_DIM, border: `1px solid rgba(201,168,76,0.3)`, color: GOLD, marginBottom: 16, alignSelf: "flex-start" }}>Most Popular</span>
-                </>
+              ) : (
+                <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 18, padding: "24px 22px" }}>
+                  <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 18, fontWeight: 700, color: "#f0f4ff", marginBottom: 4 }}>Send an Enquiry</div>
+                  <p style={{ fontSize: 12.5, color: "rgba(180,195,230,0.32)", marginBottom: 20, lineHeight: 1.55 }}>We'll open WhatsApp or Gmail with your details pre-filled.</p>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 11 }}>
+                    <div className="form-row" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                      <div>
+                        <label style={{ fontSize: 11.5, color: "rgba(180,195,230,0.4)", display: "block", marginBottom: 5, fontWeight: 500 }}>Name <span style={{ color: GOLD }}>*</span></label>
+                        <input {...inp("name", "Full name")} style={{ ...inputCss("name"), padding: "9px 12px", fontSize: 13 }} />
+                        {errors.name && <div className="form-err"><X size={10} />{errors.name}</div>}
+                      </div>
+                      <div>
+                        <label style={{ fontSize: 11.5, color: "rgba(180,195,230,0.4)", display: "block", marginBottom: 5, fontWeight: 500 }}>WhatsApp <span style={{ color: GOLD }}>*</span></label>
+                        <input {...inp("phone", "10-digit", "tel")} style={{ ...inputCss("phone"), padding: "9px 12px", fontSize: 13 }} />
+                        {errors.phone && <div className="form-err"><X size={10} />{errors.phone}</div>}
+                      </div>
+                    </div>
+                    <div className="form-row" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                      <div>
+                        <label style={{ fontSize: 11.5, color: "rgba(180,195,230,0.4)", display: "block", marginBottom: 5, fontWeight: 500 }}>Email <span style={{ color: "rgba(180,195,230,0.2)" }}>(opt.)</span></label>
+                        <input {...inp("email", "you@email.com", "email")} style={{ ...inputCss("email"), padding: "9px 12px", fontSize: 13 }} />
+                        {errors.email && <div className="form-err"><X size={10} />{errors.email}</div>}
+                      </div>
+                      <div>
+                        <label style={{ fontSize: 11.5, color: "rgba(180,195,230,0.4)", display: "block", marginBottom: 5, fontWeight: 500 }}>Course</label>
+                        <select value={form.course} onChange={(e) => setForm((p) => ({ ...p, course: e.target.value }))} style={{ ...inputCss("course"), padding: "9px 12px", fontSize: 13, color: form.course ? "#f0f4ff" : "rgba(180,195,230,0.22)", appearance: "none" }}>
+                          <option value="">Select…</option>
+                          <option value="JEE Advanced Complete">JEE Advanced</option>
+                          <option value="NEET Physics">NEET Physics</option>
+                          <option value="Board Exam Prep">Board Prep</option>
+                          <option value="Not sure yet">Not sure yet</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div>
+                      <label style={{ fontSize: 11.5, color: "rgba(180,195,230,0.4)", display: "block", marginBottom: 5, fontWeight: 500 }}>Message <span style={{ color: "rgba(180,195,230,0.2)" }}>(optional)</span></label>
+                      <textarea {...inp("message", "Any specific questions…")} rows={2} style={{ ...inputCss("message"), padding: "9px 12px", fontSize: 13, resize: "vertical", minHeight: 68 }}
+                        onFocus={(e) => { e.target.style.borderColor = GOLD; e.target.style.background = "rgba(201,168,76,0.05)"; }}
+                        onBlur={(e)  => { e.target.style.borderColor = "rgba(255,255,255,0.08)"; e.target.style.background = "rgba(255,255,255,0.04)"; }}
+                      />
+                    </div>
+                    {emailStatus === "success" && <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 14px", borderRadius: 10, background: TEAL_DIM, border: `1px solid rgba(45,212,191,0.28)` }}><Check size={15} color={TEAL} /><span style={{ fontSize: 13, color: TEAL, fontWeight: 500 }}>Email sent!</span></div>}
+                    {emailStatus === "error"   && <div style={{ display: "flex", alignItems: "flex-start", gap: 8, padding: "10px 14px", borderRadius: 10, background: "rgba(251,113,133,0.08)", border: "1px solid rgba(251,113,133,0.28)" }}><X size={15} color={ROSE} style={{ marginTop: 1, flexShrink: 0 }} /><span style={{ fontSize: 12.5, color: ROSE, lineHeight: 1.5 }}>{emailError}</span></div>}
+                    <div className="form-row" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 2 }}>
+                      <button className="btn" onClick={handleSubmitWA} style={{ padding: "11px", borderRadius: 11, fontSize: 13, fontWeight: 600, background: "linear-gradient(135deg, #25d366, #1aab55)", color: "white", border: "none", display: "flex", alignItems: "center", justifyContent: "center", gap: 7, boxShadow: "0 4px 18px rgba(37,211,102,0.3)" }}>
+                        <MessageSquare size={14} /> WhatsApp
+                      </button>
+                      <button className="btn" onClick={handleSubmitEmail} disabled={emailStatus === "sending"} style={{ padding: "11px", borderRadius: 11, fontSize: 13, fontWeight: 600, background: `linear-gradient(135deg, ${GOLD}, #e8c96a)`, color: "#0b1120", border: "none", display: "flex", alignItems: "center", justifyContent: "center", gap: 7, opacity: emailStatus === "sending" ? 0.7 : 1 }}>
+                        {emailStatus === "sending" ? <><span style={{ width: 13, height: 13, border: "2px solid rgba(0,0,0,0.2)", borderTopColor: "#0b1120", borderRadius: "50%", display: "inline-block", animation: "spin 0.7s linear infinite" }} />Sending…</> : <><Mail size={14} /> Send Email</>}
+                      </button>
+                    </div>
+                    <p style={{ fontSize: 11, color: "rgba(180,195,230,0.18)", textAlign: "center", lineHeight: 1.5 }}>WhatsApp opens a chat · Email sends directly to our inbox</p>
+                  </div>
+                </div>
               )}
-              {!plan.popular && <div style={{ height: 8 }} />}
-              <div style={{ fontSize: 12.5, color: "rgba(180,195,230,0.38)", fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 10 }}>{plan.name}</div>
-              <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 42, fontWeight: 700, color: "#f0f4ff", lineHeight: 1, marginBottom: 4 }}>{plan.price}</div>
-              <div style={{ fontSize: 12.5, color: "rgba(180,195,230,0.28)", marginBottom: 28 }}>{plan.period}</div>
-              <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: 11, marginBottom: 28, flex: 1 }}>
-                {plan.features.map((f, j) => (
-                  <li key={j} style={{ fontSize: 13.5, color: f.ok ? "rgba(180,195,230,0.6)" : "rgba(180,195,230,0.2)", display: "flex", alignItems: "center", gap: 10 }}>
-                    {f.ok ? <div style={{ width: 20, height: 20, borderRadius: "50%", background: TEAL_DIM, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Check size={11} color={TEAL} /></div>
-                           : <div style={{ width: 20, height: 20, borderRadius: "50%", background: "rgba(255,255,255,0.04)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><X size={11} color="rgba(180,195,230,0.2)" /></div>}
-                    {f.text}
-                  </li>
-                ))}
-              </ul>
-              <button className="btn" onClick={() => openWA(`Hi! I'd like to subscribe to the PhysicsPro ${plan.name} plan.`)} style={{ width: "100%", padding: 13, borderRadius: 11, fontSize: 13.5, fontWeight: 600, background: plan.popular ? `linear-gradient(135deg, ${GOLD}, #e8c96a)` : "rgba(255,255,255,0.05)", color: plan.popular ? "#0b1120" : "rgba(180,195,230,0.5)", border: plan.popular ? "none" : "1px solid rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", gap: 7, boxShadow: plan.popular ? `0 6px 22px rgba(201,168,76,0.32)` : "none" }}>
-                <MessageSquare size={14} /> {plan.popular ? "Enroll Now" : plan.price === "Free" ? "Get Started" : "Get Annual"}
-              </button>
             </div>
-          ))}
-        </div>
-      </section>
-
-      <div style={{ height: 1, background: `linear-gradient(90deg, transparent, rgba(201,168,76,0.15), transparent)`, margin: "0 48px" }} />
-
-      {/* ── CONTACT ── */}
-      <section id="contact" ref={registerRef("contact")} data-observe className="section-pad" style={{ padding: "72px 48px" }}>
-        <div className="contact-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 56, alignItems: "start" }}>
-          <div {...fadeIn("contact", 0)}>
-            <div className="tag" style={{ background: GOLD_DIM, border: `1px solid rgba(201,168,76,0.22)`, color: GOLD, marginBottom: 16 }}>Contact Us</div>
-            <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(28px,4vw,40px)", fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1.15, color: "#f0f4ff", marginBottom: 16 }}>Got questions?<br />We're one tap away.</h2>
-            <p style={{ fontSize: 15, color: "rgba(180,195,230,0.38)", lineHeight: 1.78, marginBottom: 40 }}>Fill the form and we'll reach you instantly via WhatsApp or email.</p>
-            
           </div>
+        </section>
 
-          <div {...fadeIn("contact", 0.18)}>
-            {submitted ? (
-              <div style={{ background: TEAL_DIM, border: `1px solid rgba(45,212,191,0.22)`, borderRadius: 18, padding: "40px 28px", textAlign: "center" }}>
-                <div style={{ width: 52, height: 52, borderRadius: "50%", background: TEAL_DIM, border: `2px solid rgba(45,212,191,0.3)`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}><Check size={24} color={TEAL} /></div>
-                <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 20, fontWeight: 700, color: "#f0f4ff", marginBottom: 8 }}>Message sent!</div>
-                <p style={{ fontSize: 13.5, color: "rgba(180,195,230,0.42)", lineHeight: 1.65, marginBottom: 20 }}>Our team will reply shortly.</p>
-                <button className="btn" onClick={() => { setSubmitted(false); setForm({ name: "", phone: "", email: "", course: "", message: "" }); }} style={{ fontSize: 13, color: "rgba(180,195,230,0.45)", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 9, padding: "9px 22px" }}>Send another</button>
-              </div>
-            ) : (
-              <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 18, padding: "24px 22px" }}>
-                <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 18, fontWeight: 700, color: "#f0f4ff", marginBottom: 4 }}>Send an Enquiry</div>
-                <p style={{ fontSize: 12.5, color: "rgba(180,195,230,0.32)", marginBottom: 20, lineHeight: 1.55 }}>We'll open WhatsApp or Gmail with your details pre-filled.</p>
-                <div style={{ display: "flex", flexDirection: "column", gap: 11 }}>
-                  <div className="form-row" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-                    <div>
-                      <label style={{ fontSize: 11.5, color: "rgba(180,195,230,0.4)", display: "block", marginBottom: 5, fontWeight: 500 }}>Name <span style={{ color: GOLD }}>*</span></label>
-                      <input {...inp("name", "Full name")} style={{ ...inputCss("name"), padding: "9px 12px", fontSize: 13 }} />
-                      {errors.name && <div className="form-err"><X size={10} />{errors.name}</div>}
-                    </div>
-                    <div>
-                      <label style={{ fontSize: 11.5, color: "rgba(180,195,230,0.4)", display: "block", marginBottom: 5, fontWeight: 500 }}>WhatsApp <span style={{ color: GOLD }}>*</span></label>
-                      <input {...inp("phone", "10-digit", "tel")} style={{ ...inputCss("phone"), padding: "9px 12px", fontSize: 13 }} />
-                      {errors.phone && <div className="form-err"><X size={10} />{errors.phone}</div>}
-                    </div>
-                  </div>
-                  <div className="form-row" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-                    <div>
-                      <label style={{ fontSize: 11.5, color: "rgba(180,195,230,0.4)", display: "block", marginBottom: 5, fontWeight: 500 }}>Email <span style={{ color: "rgba(180,195,230,0.2)" }}>(opt.)</span></label>
-                      <input {...inp("email", "you@email.com", "email")} style={{ ...inputCss("email"), padding: "9px 12px", fontSize: 13 }} />
-                      {errors.email && <div className="form-err"><X size={10} />{errors.email}</div>}
-                    </div>
-                    <div>
-                      <label style={{ fontSize: 11.5, color: "rgba(180,195,230,0.4)", display: "block", marginBottom: 5, fontWeight: 500 }}>Course</label>
-                      <select value={form.course} onChange={(e) => setForm((p) => ({ ...p, course: e.target.value }))} style={{ ...inputCss("course"), padding: "9px 12px", fontSize: 13, color: form.course ? "#f0f4ff" : "rgba(180,195,230,0.22)", appearance: "none" }}>
-                        <option value="">Select…</option>
-                        <option value="JEE Advanced Complete">JEE Advanced</option>
-                        <option value="NEET Physics">NEET Physics</option>
-                        <option value="Board Exam Prep">Board Prep</option>
-                        <option value="Not sure yet">Not sure yet</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div>
-                    <label style={{ fontSize: 11.5, color: "rgba(180,195,230,0.4)", display: "block", marginBottom: 5, fontWeight: 500 }}>Message <span style={{ color: "rgba(180,195,230,0.2)" }}>(optional)</span></label>
-                    <textarea {...inp("message", "Any specific questions…")} rows={2} style={{ ...inputCss("message"), padding: "9px 12px", fontSize: 13, resize: "vertical", minHeight: 68 }}
-                      onFocus={(e) => { e.target.style.borderColor = GOLD; e.target.style.background = "rgba(201,168,76,0.05)"; }}
-                      onBlur={(e)  => { e.target.style.borderColor = "rgba(255,255,255,0.08)"; e.target.style.background = "rgba(255,255,255,0.04)"; }}
-                    />
-                  </div>
-                  {emailStatus === "success" && <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 14px", borderRadius: 10, background: TEAL_DIM, border: `1px solid rgba(45,212,191,0.28)` }}><Check size={15} color={TEAL} /><span style={{ fontSize: 13, color: TEAL, fontWeight: 500 }}>Email sent!</span></div>}
-                  {emailStatus === "error"   && <div style={{ display: "flex", alignItems: "flex-start", gap: 8, padding: "10px 14px", borderRadius: 10, background: "rgba(251,113,133,0.08)", border: "1px solid rgba(251,113,133,0.28)" }}><X size={15} color={ROSE} style={{ marginTop: 1, flexShrink: 0 }} /><span style={{ fontSize: 12.5, color: ROSE, lineHeight: 1.5 }}>{emailError}</span></div>}
-                  <div className="form-row" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 2 }}>
-                    <button className="btn" onClick={handleSubmitWA} style={{ padding: "11px", borderRadius: 11, fontSize: 13, fontWeight: 600, background: "linear-gradient(135deg, #25d366, #1aab55)", color: "white", border: "none", display: "flex", alignItems: "center", justifyContent: "center", gap: 7, boxShadow: "0 4px 18px rgba(37,211,102,0.3)" }}>
-                      <MessageSquare size={14} /> WhatsApp
-                    </button>
-                    <button className="btn" onClick={handleSubmitEmail} disabled={emailStatus === "sending"} style={{ padding: "11px", borderRadius: 11, fontSize: 13, fontWeight: 600, background: `linear-gradient(135deg, ${GOLD}, #e8c96a)`, color: "#0b1120", border: "none", display: "flex", alignItems: "center", justifyContent: "center", gap: 7, opacity: emailStatus === "sending" ? 0.7 : 1 }}>
-                      {emailStatus === "sending" ? <><span style={{ width: 13, height: 13, border: "2px solid rgba(0,0,0,0.2)", borderTopColor: "#0b1120", borderRadius: "50%", display: "inline-block", animation: "spin 0.7s linear infinite" }} />Sending…</> : <><Mail size={14} /> Send Email</>}
-                    </button>
-                  </div>
-                  <p style={{ fontSize: 11, color: "rgba(180,195,230,0.18)", textAlign: "center", lineHeight: 1.5 }}>WhatsApp opens a chat · Email sends directly to our inbox</p>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
+        <div className="divider" style={{ height: 1, background: `linear-gradient(90deg, transparent, rgba(201,168,76,0.15), transparent)`, margin: "0 48px" }} />
 
-      <div style={{ height: 1, background: `linear-gradient(90deg, transparent, rgba(201,168,76,0.15), transparent)`, margin: "0 48px" }} />
-
-      {/* ── FOOTER ── */}
-      <footer style={{ padding: "40px 48px" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 20, marginBottom: 28 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <div style={{ width: 32, height: 32, borderRadius: 9, background: `linear-gradient(135deg, ${GOLD}, #e8c96a)`, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 3px 12px rgba(201,168,76,0.32)` }}><Atom size={15} color="#0b1120" /></div>
-            <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 15, color: "rgba(180,195,230,0.45)", fontWeight: 600 }}>PhysicsPro</div>
+        {/* ── FOOTER ── */}
+        <footer className="footer-inner" style={{ padding: "40px 48px" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 20, marginBottom: 28 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <div style={{ width: 32, height: 32, borderRadius: 9, background: `linear-gradient(135deg, ${GOLD}, #e8c96a)`, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 3px 12px rgba(201,168,76,0.32)` }}><Atom size={15} color="#0b1120" /></div>
+              <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 15, color: "rgba(180,195,230,0.45)", fontWeight: 600 }}>PhysicsPro</div>
+            </div>
+            <div style={{ display: "flex", gap: 10 }}>
+              <button className="btn" onClick={() => openWA()} style={{ display: "flex", alignItems: "center", gap: 7, fontSize: 13, padding: "9px 18px", background: "rgba(52,211,153,0.06)", border: "1px solid rgba(52,211,153,0.18)", borderRadius: 9, color: "#34d399" }}><MessageSquare size={13} /> WhatsApp</button>
+              <button className="btn" onClick={openMail} style={{ display: "flex", alignItems: "center", gap: 7, fontSize: 13, padding: "9px 18px", background: GOLD_DIM, border: `1px solid rgba(201,168,76,0.2)`, borderRadius: 9, color: GOLD }}><Mail size={13} /> Email</button>
+            </div>
           </div>
-          <div style={{ display: "flex", gap: 10 }}>
-            <button className="btn" onClick={() => openWA()} style={{ display: "flex", alignItems: "center", gap: 7, fontSize: 13, padding: "9px 18px", background: "rgba(52,211,153,0.06)", border: "1px solid rgba(52,211,153,0.18)", borderRadius: 9, color: "#34d399" }}><MessageSquare size={13} /> WhatsApp</button>
-            <button className="btn" onClick={openMail} style={{ display: "flex", alignItems: "center", gap: 7, fontSize: 13, padding: "9px 18px", background: GOLD_DIM, border: `1px solid rgba(201,168,76,0.2)`, borderRadius: 9, color: GOLD }}><Mail size={13} /> Email</button>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 14, paddingTop: 20, borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+            <span style={{ fontSize: 12.5, color: "rgba(180,195,230,0.2)" }}>© 2026 PhysicsPro. All rights reserved.</span>
+            <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
+              {["Privacy", "Terms", "Refund Policy", "Contact"].map((l) => (
+                <span key={l} style={{ fontSize: 12.5, color: "rgba(180,195,230,0.22)", cursor: "pointer", transition: "color 0.15s" }}
+                  onMouseEnter={(e) => (e.target.style.color = "rgba(180,195,230,0.6)")}
+                  onMouseLeave={(e) => (e.target.style.color = "rgba(180,195,230,0.22)")}
+                >{l}</span>
+              ))}
+            </div>
           </div>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 14, paddingTop: 20, borderTop: "1px solid rgba(255,255,255,0.05)" }}>
-          <span style={{ fontSize: 12.5, color: "rgba(180,195,230,0.2)" }}>© 2026 PhysicsPro. All rights reserved.</span>
-          <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
-            {["Privacy", "Terms", "Refund Policy", "Contact"].map((l) => (
-              <span key={l} style={{ fontSize: 12.5, color: "rgba(180,195,230,0.22)", cursor: "pointer", transition: "color 0.15s" }}
-                onMouseEnter={(e) => (e.target.style.color = "rgba(180,195,230,0.6)")}
-                onMouseLeave={(e) => (e.target.style.color = "rgba(180,195,230,0.22)")}
-              >{l}</span>
-            ))}
-          </div>
-        </div>
-      </footer>
+        </footer>
+      </div>
     </div>
   );
 }
