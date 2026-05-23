@@ -23,6 +23,119 @@ const VIO_DIM = "rgba(129,140,248,0.12)";
 const EMERALD = "#34d399";
 const ROSE    = "#fb7185";
 
+const TEACHER_PHOTO_URL = "/teacher.png";
+
+// ── TeacherPhoto is defined OUTSIDE the parent component so React
+//    never unmounts/remounts it on re-renders → no image blink ──
+const TeacherPhoto = () => (
+  <div style={{ position: "relative", width: "100%", height: "100%" }}>
+    {/* Watermark */}
+    <div style={{
+      position: "absolute",
+      top: "50%", left: "50%",
+      transform: "translate(-50%, -50%)",
+      fontFamily: "'Playfair Display', serif",
+      fontSize: "clamp(52px, 8vw, 96px)",
+      fontWeight: 700,
+      fontStyle: "italic",
+      color: "rgba(201,168,76,0.07)",
+      whiteSpace: "nowrap",
+      letterSpacing: "-0.02em",
+      pointerEvents: "none",
+      zIndex: 0,
+      userSelect: "none",
+      lineHeight: 1,
+    }}>
+      Physics Pro
+    </div>
+
+    {/* Teacher image */}
+    <div style={{
+      position: "relative",
+      zIndex: 1,
+      display: "flex",
+      alignItems: "flex-end",
+      justifyContent: "center",
+      height: "100%",
+    }}>
+      <img
+        src={TEACHER_PHOTO_URL}
+        alt="Physics teacher"
+        loading="eager"
+        fetchpriority="high"
+        draggable={false}
+        style={{
+          width: "100%",
+          maxHeight: 560,
+          objectFit: "contain",
+          objectPosition: "bottom center",
+          display: "block",
+          filter: "drop-shadow(0 16px 48px rgba(0,0,0,0.35))",
+          backfaceVisibility: "hidden",
+          WebkitBackfaceVisibility: "hidden",
+          transform: "translateZ(0)",
+          willChange: "transform",
+        }}
+        onError={(e) => {
+          const img = e.currentTarget;
+          if (img.dataset.fallbackApplied) return;
+          img.dataset.fallbackApplied = "true";
+          img.src =  "https://static.vecteezy.com/system/resources/thumbnails/027/394/933/small_2x/teacher-lady-friendly-smiling-arms-crossed-png.png";
+
+             img.style.borderRadius = "24px";
+          img.style.objectFit = "cover";
+          img.style.maxHeight = "520px";
+        }}
+      />
+    </div>
+
+    {/* Credential badge – bottom-left */}
+    <div style={{
+      position: "absolute",
+      bottom: 8,
+      left: 0,
+      zIndex: 2,
+      display: "flex",
+      alignItems: "center",
+      gap: 10,
+      background: "rgba(11,17,32,0.85)",
+      backdropFilter: "blur(14px)",
+      border: `1px solid rgba(201,168,76,0.28)`,
+      borderRadius: 14,
+      padding: "10px 16px",
+      boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
+    }}>
+      <div style={{
+        width: 36, height: 36, borderRadius: 10,
+        background: `linear-gradient(135deg, ${GOLD}, #e8c96a)`,
+        display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+      }}>
+        <GraduationCap size={18} color="#0b1120" />
+      </div>
+      <div>
+        <div style={{ fontSize: 13, fontWeight: 600, color: "#f0f4ff", fontFamily: "'Playfair Display', serif", lineHeight: 1.2 }}>IIT Alumni Faculty</div>
+        <div style={{ fontSize: 10.5, color: GOLD, letterSpacing: "0.06em", marginTop: 2 }}>B.Tech Physics · IIT Delhi</div>
+      </div>
+    </div>
+
+    {/* Experience badge – top-right */}
+    <div style={{
+      position: "absolute",
+      top: 12,
+      right: 0,
+      zIndex: 2,
+      background: `linear-gradient(135deg, ${GOLD}, #e8c96a)`,
+      borderRadius: 12,
+      padding: "8px 14px",
+      boxShadow: `0 6px 24px rgba(201,168,76,0.4)`,
+      textAlign: "center",
+    }}>
+      <div style={{ fontSize: 20, fontWeight: 700, color: "#0b1120", fontFamily: "'Playfair Display', serif", lineHeight: 1 }}>10+</div>
+      <div style={{ fontSize: 9.5, color: "rgba(11,17,32,0.7)", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", marginTop: 2 }}>Yrs Teaching</div>
+    </div>
+  </div>
+);
+
 export default function PhysicsProLanding() {
   const [activeNav, setActiveNav]     = useState("Home");
   const [scrolled, setScrolled]       = useState(false);
@@ -198,42 +311,6 @@ export default function PhysicsProLanding() {
 
   const tCurr = testimonials[slideIndex];
 
-  // Teacher Photo Card
-  const TeacherPhoto = () => (
-    <div style={{ position: "relative", width: "100%", maxWidth: 420 }}>
-      {/* Glow rings behind */}
-      <div style={{ position: "absolute", inset: -24, borderRadius: "50%", background: `radial-gradient(circle, rgba(201,168,76,0.1) 0%, transparent 65%)`, pointerEvents: "none", zIndex: 0 }} />
-      {/* Main photo card */}
-      <div style={{ position: "relative", zIndex: 1, borderRadius: 24, overflow: "hidden", border: `1.5px solid rgba(201,168,76,0.22)`, boxShadow: "0 24px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04)" }}>
-        <img
-          src="https://images.unsplash.com/photo-1537368910025-700350fe46c7?fm=jpg&q=85&w=600&auto=format&fit=crop&crop=faces,top"
-          alt="Physics teacher"
-          style={{ width: "100%", aspectRatio: "3/4", objectFit: "cover", objectPosition: "center top", display: "block", filter: "brightness(0.88) contrast(1.05)" }}
-          onError={(e) => {
-            e.target.onerror = null;
-            e.target.src = "https://images.unsplash.com/photo-1584471578048-8e3fa4d66b33?fm=jpg&q=85&w=600&auto=format&fit=crop&crop=faces,top";
-          }}
-        />
-        {/* Gradient overlay bottom */}
-        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "45%", background: "linear-gradient(to top, rgba(11,17,32,0.95) 0%, rgba(11,17,32,0.5) 50%, transparent 100%)" }} />
-        {/* Name tag at bottom */}
-        <div style={{ position: "absolute", bottom: 20, left: 20, right: 20 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <div style={{ width: 36, height: 36, borderRadius: 10, background: `linear-gradient(135deg, ${GOLD}, #e8c96a)`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <GraduationCap size={18} color="#0b1120" />
-            </div>
-            <div>
-              <div style={{ fontSize: 14, fontWeight: 600, color: "#f0f4ff", fontFamily: "'Playfair Display', serif" }}>IIT Alumni Faculty</div>
-              <div style={{ fontSize: 11, color: GOLD, letterSpacing: "0.08em" }}>IIT Delhi · B.Tech Physics</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-   
-    </div>
-  );
-
   return (
     <div style={{ fontFamily: "'DM Sans', sans-serif", background: "#0b1120", color: "#f0f4ff", overflowX: "hidden", minHeight: "100vh" }}>
       <style>{`
@@ -261,8 +338,6 @@ export default function PhysicsProLanding() {
         @keyframes slideInLeft{from{opacity:0;transform:translateX(-50px) scale(0.97);}to{opacity:1;transform:translateX(0) scale(1);}}
         .anim-in-right{animation:slideInRight 0.4s cubic-bezier(0.4,0,0.2,1) forwards;}
         .anim-in-left{animation:slideInLeft 0.4s cubic-bezier(0.4,0,0.2,1) forwards;}
-        @keyframes floatUp{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
-        .teacher-float{animation:floatUp 5s ease-in-out infinite;}
 
         /* ── DESKTOP NAV ── */
         .desktop-nav{
@@ -314,7 +389,7 @@ export default function PhysicsProLanding() {
           .hero-pad{padding:56px 20px 72px!important;}
           .hero-inner{flex-direction:column!important;gap:32px!important;}
           .hero-text{max-width:100%!important;}
-          .hero-img{width:100%!important;max-width:320px!important;margin:0 auto!important;order:2!important;}
+          .hero-img{width:100%!important;max-width:340px!important;margin:0 auto!important;order:2!important;min-height:320px!important;}
           .section-pad{padding:56px 20px!important;}
           .stats-wrap{flex-wrap:wrap;}
           .stat-cell{min-width:50%;flex:1;}
@@ -324,7 +399,6 @@ export default function PhysicsProLanding() {
           .form-row{grid-template-columns:1fr!important;}
           .footer-inner{padding:32px 20px!important;}
           .divider{margin:0 20px!important;}
-          /* mobile slider: only show center card */
           .slider-side-card{display:none!important;}
           .slider-center-card{flex:0 0 100%!important;}
           .wa-float{bottom:88px;right:16px;}
@@ -335,13 +409,8 @@ export default function PhysicsProLanding() {
         @media(min-width:769px){
           .wa-float{bottom:28px;right:28px;}
           .bottom-nav{display:none!important;}
-          /* extra section padding at bottom on desktop not needed */
-        }
-        /* push content below fixed nav */
-        @media(min-width:769px){
           .page-wrap{padding-top:68px;}
         }
-        /* page bottom padding for mobile bottom nav */
         @media(max-width:768px){
           .page-wrap{padding-bottom:72px;}
         }
@@ -401,52 +470,69 @@ export default function PhysicsProLanding() {
 
       <div className="page-wrap">
         {/* ── HERO ── */}
-        <section id="hero" ref={registerRef("hero")} data-observe className="hero-pad" style={{ padding: "80px 48px 80px", position: "relative", overflow: "hidden" }}>
+        <section id="hero" ref={registerRef("hero")} data-observe className="hero-pad"
+          style={{ padding: "72px 48px 0", position: "relative", overflow: "hidden", minHeight: 580 }}>
+
+          {/* Background dots & glows */}
           <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
-            <div style={{ position: "absolute", top: -80, right: "8%", width: 560, height: 560, borderRadius: "50%", background: `radial-gradient(circle, rgba(201,168,76,0.07) 0%, transparent 65%)`, animation: "pulse-glow 7s ease-in-out infinite" }} />
-            <div style={{ position: "absolute", bottom: -60, left: "2%", width: 380, height: 380, borderRadius: "50%", background: `radial-gradient(circle, rgba(79,142,247,0.05) 0%, transparent 65%)` }} />
-            <div className="grid-dots" style={{ position: "absolute", inset: 0, opacity: 0.45 }} />
+            <div style={{ position: "absolute", top: -80, right: "5%", width: 640, height: 640, borderRadius: "50%", background: `radial-gradient(circle, rgba(201,168,76,0.06) 0%, transparent 65%)`, animation: "pulse-glow 7s ease-in-out infinite" }} />
+            <div style={{ position: "absolute", bottom: 0, left: "2%", width: 380, height: 380, borderRadius: "50%", background: `radial-gradient(circle, rgba(79,142,247,0.04) 0%, transparent 65%)` }} />
+            <div className="grid-dots" style={{ position: "absolute", inset: 0, opacity: 0.4 }} />
           </div>
 
-          <div className="hero-inner" style={{ maxWidth: 1100, margin: "0 auto", display: "flex", alignItems: "center", gap: 48, position: "relative" }}>
-            {/* Left – text */}
-            <div className="hero-text" style={{ flex: 1, minWidth: 0, maxWidth: 580 }}>
+          <div className="hero-inner" style={{ maxWidth: 1140, margin: "0 auto", display: "flex", alignItems: "flex-end", gap: 32, position: "relative", minHeight: 520 }}>
+
+            {/* LEFT – text content */}
+            <div className="hero-text" style={{ flex: 1, minWidth: 0, maxWidth: 560, paddingBottom: 64 }}>
               <div {...fadeIn("hero", 0)}>
                 <div className="tag" style={{ background: GOLD_DIM, border: `1px solid rgba(201,168,76,0.28)`, color: GOLD, marginBottom: 28 }}>
                   <Zap size={11} fill={GOLD} /> Batch 2026 · JEE · NEET · Board Exams — Now Open
                 </div>
               </div>
               <div {...fadeIn("hero", 0.1)}>
-                <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(38px, 5.5vw, 66px)", fontWeight: 700, lineHeight: 1.08, letterSpacing: "-0.02em", marginBottom: 22, color: "#f0f4ff" }}>
+                <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(36px, 5vw, 62px)", fontWeight: 700, lineHeight: 1.09, letterSpacing: "-0.02em", marginBottom: 22, color: "#f0f4ff" }}>
                   Physics made{" "}
                   <span style={{ fontStyle: "italic", background: `linear-gradient(135deg, ${GOLD}, #e8c96a)`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>crystal clear.</span>
                 </h1>
               </div>
               <div {...fadeIn("hero", 0.2)}>
-                <p style={{ fontSize: 16.5, color: "rgba(180,195,230,0.48)", maxWidth: 470, lineHeight: 1.78, marginBottom: 36 }}>
-                  Live classes, recorded sessions, and 1-on-1 doubt clearing — taught by IIT alumni who've cracked the exact exams you're preparing for.
-                </p>
+                <div style={{ display: "flex", gap: 12, alignItems: "flex-start", marginBottom: 32 }}>
+                  <span style={{ fontSize: 52, color: GOLD, fontFamily: "'Playfair Display', serif", lineHeight: 0.8, flexShrink: 0, marginTop: 8 }}>"</span>
+                  <p style={{ fontSize: 16, color: "rgba(180,195,230,0.52)", maxWidth: 460, lineHeight: 1.78 }}>
+                    Live classes, recorded sessions, and 1-on-1 doubt clearing — taught by IIT alumni who've cracked the exact exams you're preparing for.
+                  </p>
+                </div>
               </div>
-              <div {...fadeIn("hero", 0.3)} style={{ display: "flex", gap: 14, flexWrap: "wrap", marginBottom: 52 }}>
-                <button className="btn" onClick={() => openWA("Hi PhysicsPro! I want to enroll.")} style={{ fontSize: 14.5, fontWeight: 600, color: "white", background: "linear-gradient(135deg,#25d366,#1aab55)", border: "none", borderRadius: 12, padding: "14px 28px", display: "inline-flex", alignItems: "center", gap: 9, boxShadow: "0 6px 24px rgba(37,211,102,0.38)" }}>
-                  <MessageSquare size={16} /> Chat on WhatsApp
+              <div {...fadeIn("hero", 0.3)} style={{ display: "flex", gap: 14, flexWrap: "wrap", marginBottom: 48 }}>
+                <button className="btn" onClick={() => openWA("Hi PhysicsPro! I want to enroll.")}
+                  style={{ fontSize: 13.5, fontWeight: 700, color: "#0b1120", background: `linear-gradient(135deg, ${GOLD}, #e8c96a)`, border: "none", borderRadius: 10, padding: "13px 28px", display: "inline-flex", alignItems: "center", gap: 9, boxShadow: `0 6px 24px rgba(201,168,76,0.4)`, letterSpacing: "0.04em", textTransform: "uppercase" }}>
+                  Contact Us
                 </button>
-                <button className="btn" onClick={() => scrollToSection(navLinks[1])} style={{ fontSize: 14.5, fontWeight: 500, color: GOLD, background: "transparent", border: `1px solid rgba(201,168,76,0.3)`, borderRadius: 12, padding: "14px 26px", display: "inline-flex", alignItems: "center", gap: 9 }}>
-                  View Courses <ArrowRight size={15} />
+                <button className="btn" onClick={() => scrollToSection(navLinks[1])}
+                  style={{ fontSize: 13.5, fontWeight: 600, color: "rgba(180,195,230,0.65)", background: "transparent", border: `1.5px solid rgba(255,255,255,0.15)`, borderRadius: 10, padding: "13px 26px", display: "inline-flex", alignItems: "center", gap: 9, letterSpacing: "0.04em", textTransform: "uppercase" }}>
+                  Learn More <ArrowRight size={15} />
                 </button>
               </div>
-              <div {...fadeIn("hero", 0.4)} style={{ display: "flex", gap: 0, flexWrap: "wrap", borderRadius: 16, overflow: "hidden", border: "1px solid rgba(255,255,255,0.07)", width: "fit-content", background: "rgba(255,255,255,0.02)" }} className="stats-wrap">
+
+              {/* Stats strip */}
+              <div {...fadeIn("hero", 0.4)} style={{ display: "flex", gap: 0, flexWrap: "wrap", borderRadius: 14, overflow: "hidden", border: "1px solid rgba(255,255,255,0.07)", width: "fit-content", background: "rgba(255,255,255,0.02)" }} className="stats-wrap">
                 {[{ n: "12,400+", l: "Students", accent: GOLD }, { n: "340+", l: "IIT Selections", accent: BLUE }, { n: "98%", l: "Pass Rate", accent: TEAL }, { n: "4.9 ★", l: "Rating", accent: VIOLET }].map((s, i, arr) => (
-                  <div key={i} className="stat-cell" style={{ padding: "18px 24px", textAlign: "center", borderRight: i < arr.length - 1 ? "1px solid rgba(255,255,255,0.06)" : "none" }}>
+                  <div key={i} className="stat-cell" style={{ padding: "16px 22px", textAlign: "center", borderRight: i < arr.length - 1 ? "1px solid rgba(255,255,255,0.06)" : "none" }}>
                     <div className="stat-num" style={{ color: s.accent }}>{s.n}</div>
-                    <div style={{ fontSize: 10.5, color: "rgba(180,195,230,0.35)", marginTop: 4, textTransform: "uppercase", letterSpacing: "0.1em" }}>{s.l}</div>
+                    <div style={{ fontSize: 10, color: "rgba(180,195,230,0.32)", marginTop: 4, textTransform: "uppercase", letterSpacing: "0.1em" }}>{s.l}</div>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Right – Teacher photo */}
-            <div className="hero-img" style={{ flex: "0 0 360px", width: 360, position: "relative" }}>
+            {/* RIGHT – Teacher photo, stable, no blink */}
+            <div className="hero-img" style={{
+              flex: "0 0 420px",
+              width: 420,
+              position: "relative",
+              alignSelf: "flex-end",
+              minHeight: 480,
+            }}>
               <TeacherPhoto />
             </div>
           </div>
@@ -527,9 +613,7 @@ export default function PhysicsProLanding() {
             </div>
           </div>
 
-          {/* ── COMPACT 3-CARD SLIDER ── */}
           <div style={{ position: "relative", overflow: "hidden" }}>
-            {/* track */}
             <div style={{ display: "flex", gap: 16, transition: "none" }}>
               {[-1, 0, 1].map((offset) => {
                 const idx = (slideIndex + offset + testimonials.length) % testimonials.length;
@@ -542,32 +626,22 @@ export default function PhysicsProLanding() {
                     className={isCenter && sliding ? (slideDir === 1 ? "anim-in-right" : "anim-in-left") : ""}
                     style={{
                       flex: isCenter ? "0 0 calc(60% - 8px)" : "0 0 calc(20% - 8px)",
-                      borderRadius: 16,
-                      padding: isCenter ? "24px 24px 20px" : "20px 16px 16px",
+                      borderRadius: 16, padding: isCenter ? "24px 24px 20px" : "20px 16px 16px",
                       background: isCenter ? "rgba(255,255,255,0.04)" : "rgba(255,255,255,0.015)",
                       border: isCenter ? `1.5px solid ${t.accent}30` : "1px solid rgba(255,255,255,0.05)",
-                      position: "relative",
-                      overflow: "hidden",
+                      position: "relative", overflow: "hidden",
                       cursor: isCenter ? "default" : "pointer",
                       opacity: isCenter ? 1 : 0.45,
                       transform: isCenter ? "scale(1)" : "scale(0.96)",
-                      transition: "all 0.35s cubic-bezier(0.4,0,0.2,1)",
-                      flexShrink: 0,
+                      transition: "all 0.35s cubic-bezier(0.4,0,0.2,1)", flexShrink: 0,
                     }}
                   >
-                    {/* accent top line on active */}
                     {isCenter && <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, ${t.accent}, transparent)`, borderRadius: "16px 16px 0 0" }} />}
-
-                    {/* score badge */}
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: isCenter ? 14 : 10 }}>
                       <div style={{ width: isCenter ? 38 : 30, height: isCenter ? 38 : 30, borderRadius: "50%", background: `${t.accent}18`, border: `1.5px solid ${t.accent}35`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: isCenter ? 12 : 10, fontWeight: 700, color: t.accent, flexShrink: 0 }}>{t.initials}</div>
                       {isCenter && <div style={{ background: `${t.accent}18`, border: `1px solid ${t.accent}35`, borderRadius: 8, padding: "4px 10px", fontSize: 12, fontWeight: 700, color: t.accent, fontFamily: "'Playfair Display', serif" }}>{t.score}</div>}
                     </div>
-
-                    {/* quote text */}
                     <p style={{ fontSize: isCenter ? 14 : 11.5, color: isCenter ? "rgba(180,195,230,0.62)" : "rgba(180,195,230,0.4)", lineHeight: 1.7, marginBottom: isCenter ? 16 : 10, fontStyle: "italic", display: "-webkit-box", WebkitLineClamp: isCenter ? 4 : 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{t.text}</p>
-
-                    {/* author */}
                     <div>
                       <div style={{ fontSize: isCenter ? 13 : 11, fontWeight: 600, color: isCenter ? "#f0f4ff" : "rgba(180,195,230,0.35)", fontFamily: "'Playfair Display', serif" }}>{t.name}</div>
                       {isCenter && <div style={{ fontSize: 11, color: "rgba(180,195,230,0.28)", marginTop: 2 }}>{t.sub}</div>}
@@ -578,7 +652,6 @@ export default function PhysicsProLanding() {
             </div>
           </div>
 
-          {/* Dot indicators */}
           <div style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 20 }}>
             {testimonials.map((_, i) => (
               <button key={i} className="btn" onClick={() => { setSlideDir(i > slideIndex ? 1 : -1); setSliding(true); setTimeout(() => { setSlideIndex(i); setSliding(false); }, 400); resetAuto(); }} style={{ width: i === slideIndex ? 24 : 8, height: 8, borderRadius: 4, background: i === slideIndex ? GOLD : "rgba(255,255,255,0.15)", border: "none", transition: "all 0.3s cubic-bezier(0.4,0,0.2,1)", padding: 0 }} />
