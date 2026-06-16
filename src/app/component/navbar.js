@@ -8,6 +8,7 @@ import {
   ChevronLeft, ChevronRight, Home, BookOpen as BookIcon,
   BarChart2, CreditCard, Phone, GraduationCap, Sun, Moon,
   Brain, Trophy, Lightbulb, FlaskConical, Shield, ExternalLink,
+  CalendarDays, BadgeIndianRupee, AlertCircle,
 } from "lucide-react";
 
 const WHATSAPP_NUMBER = "919876543210";
@@ -259,8 +260,8 @@ export default function PhysicsProLanding() {
   const openMail = () => window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=vaishnavkapil412@gmail.com`,"_blank");
 
   const courses = [
-    { badge:"Most Popular", Icon:School, accent:"#c9a84c", accentDim:isDark?"rgba(201,168,76,0.1)":"rgba(201,168,76,0.12)", title:"Class 9 & 10 Science", sub:"Online · ₹500/month", desc:"Complete CBSE Science with strong focus on Physics — concepts, board prep, Olympiad & NTSE training. Both weak and meritorious students welcome.", hours:"Board + Competitive", enrolled:"3,200+", featured:true },
-    { badge:"Board + JEE/NEET", Icon:Atom, accent:"#0d9488", accentDim:isDark?"rgba(13,148,136,0.1)":"rgba(13,148,136,0.12)", title:"Class 11 & 12 Physics", sub:"Online · ₹500/month", desc:"In-depth Physics for CBSE boards and entrance exam foundation — JEE, NEET, and beyond. Strong conceptual base guaranteed.", hours:"Board + Entrance", enrolled:"4,100+", featured:false },
+    { badge:"Most Popular", Icon:School, accent:"#c9a84c", accentDim:isDark?"rgba(201,168,76,0.1)":"rgba(201,168,76,0.12)", title:"Class 9 & 10 Science", sub:"Online · ₹3,000/month", desc:"Complete CBSE Science with strong focus on Physics — concepts, board prep, Olympiad & NTSE training. Both weak and meritorious students welcome.", hours:"Board + Competitive", enrolled:"3,200+", featured:true },
+    { badge:"Board + JEE/NEET", Icon:Atom, accent:"#0d9488", accentDim:isDark?"rgba(13,148,136,0.1)":"rgba(13,148,136,0.12)", title:"Class 11 & 12 Physics", sub:"Online · ₹2,000/month", desc:"In-depth Physics for CBSE boards and entrance exam foundation — JEE, NEET, and beyond. Strong conceptual base guaranteed.", hours:"Board + Entrance", enrolled:"4,100+", featured:false },
     { badge:"Olympiad & NTSE", Icon:Award, accent:"#8b5cf6", accentDim:isDark?"rgba(139,92,246,0.1)":"rgba(139,92,246,0.12)", title:"Competitive Exam Prep", sub:"IMO · ISO · NTSE", desc:"Specialised training for IMO, ISO, NTSE, and other Olympiads. Authored Mission NTSE Class 8 & 10 — the definitive prep resource.", hours:"Flexible batches", enrolled:"1,800+", featured:false },
   ];
 
@@ -273,10 +274,68 @@ export default function PhysicsProLanding() {
     { Icon:Trophy, accent:"#10b981", title:"30+ Years · DPS Faridabad", desc:"Including 22+ years at DPS Faridabad — one of India's most reputed schools." },
   ];
 
+  /* ─── UPDATED PRICING PLANS ─── */
   const plans = [
-    { name:"Class 9 & 10", price:"₹500", period:"/ month", accent:"#c9a84c", popular:true, features:[{text:"Science (Physics focus)",ok:true},{text:"Live online classes",ok:true},{text:"Doubt clearing sessions",ok:true},{text:"NTSE / Olympiad prep",ok:true}] },
-    { name:"Class 11 & 12", price:"₹500", period:"/ month", accent:"#0d9488", popular:false, features:[{text:"Complete Physics syllabus",ok:true},{text:"Live online classes",ok:true},{text:"Doubt clearing sessions",ok:true},{text:"JEE / NEET foundation",ok:true}] },
-    { name:"Trial Class", price:"Free", period:"first class", accent:isDark?"#64748b":"#94a3b8", popular:false, features:[{text:"1 free demo class",ok:true},{text:"Meet Sunira ma'am",ok:true},{text:"No commitment needed",ok:true},{text:"WhatsApp support",ok:false}] },
+    {
+      name: "Regular Tuition",
+      label: "Class 9, 10 & 11",
+      price: "₹3,000",
+      period: "/ month",
+      accent: "#c9a84c",
+      popular: true,
+      tag: "Most Popular",
+      sessions: "12 sessions / month",
+      sessionNote: "3 sessions per week",
+      paymentNote: "Payment in advance",
+      features: [
+        { text:"12 live online sessions/month", ok:true },
+        { text:"3 sessions every week", ok:true },
+        { text:"Doubt clearing included", ok:true },
+        { text:"Study material provided", ok:true },
+        { text:"NTSE / Olympiad prep", ok:true },
+        { text:"Full advance payment", ok:true },
+      ],
+    },
+    {
+      name: "Introductory Tuition",
+      label: "Class 12",
+      price: "₹2,000",
+      period: "/ month",
+      accent: "#0d9488",
+      popular: false,
+      tag: "Class 12 Special",
+      sessions: "12 sessions / month",
+      sessionNote: "3 sessions per week",
+      paymentNote: "Payment in advance",
+      features: [
+        { text:"12 live online sessions/month", ok:true },
+        { text:"3 sessions every week", ok:true },
+        { text:"Doubt clearing included", ok:true },
+        { text:"Study material provided", ok:true },
+        { text:"JEE / NEET foundation", ok:true },
+        { text:"Full advance payment", ok:true },
+      ],
+    },
+    {
+      name: "Free Demo",
+      label: "First Class Free",
+      price: "Free",
+      period: "first class",
+      accent: isDark ? "#64748b" : "#94a3b8",
+      popular: false,
+      tag: "No Risk",
+      sessions: "1 demo session",
+      sessionNote: "No commitment needed",
+      paymentNote: "No payment required",
+      features: [
+        { text:"1 free demo class", ok:true },
+        { text:"Meet Sunira ma'am", ok:true },
+        { text:"Experience the teaching style", ok:true },
+        { text:"No commitment needed", ok:true },
+        { text:"WhatsApp support", ok:false },
+        { text:"Study material", ok:false },
+      ],
+    },
   ];
 
   const inputCss = (field) => ({
@@ -320,7 +379,7 @@ export default function PhysicsProLanding() {
 
   const footerLinks = [
     { label:"Privacy", content:(<><p style={{marginBottom:12}}>We take your privacy seriously. All personal information shared while enquiring about classes — including your name, phone number, and email — is used solely to respond to your enquiry and coordinate your enrollment.</p><p style={{marginBottom:12}}>We do not sell, rent, or share your data with third parties. Your contact details may be used to send course updates or session reminders via WhatsApp. You can opt out at any time by messaging us.</p><p>Data shared via our contact form is transmitted securely through Web3Forms and stored only for communication purposes.</p></>) },
-    { label:"Terms", content:(<><p style={{marginBottom:12}}>By enrolling in any course offered by Sunira Agarwal, you agree to the following terms:</p><ul style={{paddingLeft:20,marginBottom:12}}><li style={{marginBottom:8}}>Course fees (₹500/month) are collected in advance and are non-refundable after the first week of the billing cycle.</li><li style={{marginBottom:8}}>Live class recordings remain accessible for 30 days after each session.</li><li style={{marginBottom:8}}>Students are expected to maintain respectful conduct in all classes and doubt sessions.</li><li style={{marginBottom:8}}>Sharing recordings or study material externally is not permitted.</li></ul><p>These terms may be updated periodically. Continued enrollment constitutes acceptance of the latest terms.</p></>) },
+    { label:"Terms", content:(<><p style={{marginBottom:12}}>By enrolling in any course offered by Sunira Agarwal, you agree to the following terms:</p><ul style={{paddingLeft:20,marginBottom:12}}><li style={{marginBottom:8}}>Course fees are collected in advance each month and are non-refundable after the first week of the billing cycle.</li><li style={{marginBottom:8}}>Regular Tuition (₹3,000/month): 12 sessions per month, 3 sessions per week — Class 9, 10 & 11.</li><li style={{marginBottom:8}}>Introductory Tuition (₹2,000/month): 12 sessions per month, 3 sessions per week — Class 12.</li><li style={{marginBottom:8}}>Live class recordings remain accessible for 30 days after each session.</li><li style={{marginBottom:8}}>Students are expected to maintain respectful conduct in all classes and doubt sessions.</li><li style={{marginBottom:8}}>Sharing recordings or study material externally is not permitted.</li></ul><p>These terms may be updated periodically. Continued enrollment constitutes acceptance of the latest terms.</p></>) },
     { label:"Refund Policy", content:(<><p style={{marginBottom:12}}>We want you to be fully satisfied. Here is our refund policy:</p><ul style={{paddingLeft:20,marginBottom:12}}><li style={{marginBottom:8}}><strong>Free demo class:</strong> Always available — no payment required before you experience a class.</li><li style={{marginBottom:8}}><strong>Within 7 days of payment:</strong> Full refund issued if requested before attending the 2nd class.</li><li style={{marginBottom:8}}><strong>After 7 days:</strong> No refund will be issued for the current month.</li><li style={{marginBottom:8}}><strong>Technical issues:</strong> If a live class cannot be conducted due to technical failure on our end, a makeup session or credit is provided.</li></ul><p>To request a refund, contact us via WhatsApp at +91 98765 43210 or email at vaishnavkapil412@gmail.com.</p></>) },
     { label:"Contact", action:()=>scrollToSection(navLinks.find(n=>n.id==="contact")) },
   ];
@@ -368,6 +427,10 @@ export default function PhysicsProLanding() {
         .bottom-nav-item.active::before{content:'';position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:28px;height:3px;border-radius:0 0 3px 3px;background:linear-gradient(90deg,#c9a84c,#e8c96a);}
         .bottom-nav-item span{font-size:9.5px;font-weight:500;letter-spacing:0.03em;transition:color 0.18s;}
         .mission-band{background:linear-gradient(135deg,#c9a84c,#e8c96a);padding:14px 48px;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;}
+
+        /* ── Pricing card styles ── */
+        .plan-session-pill{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;font-size:11.5px;font-weight:500;}
+        .plan-advance-notice{display:flex;align-items:center;gap:6px;padding:8px 12px;border-radius:10px;font-size:11.5px;font-weight:500;margin-bottom:18px;}
 
         /* ── Footer styles ── */
         .footer-link{background:none;border:none;font-family:inherit;cursor:pointer;font-size:12.5px;color:${T.textDim};transition:color 0.16s;padding:4px 0;}
@@ -619,7 +682,7 @@ export default function PhysicsProLanding() {
               <h2 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"clamp(28px,4vw,40px)",fontWeight:700,letterSpacing:"-0.02em",lineHeight:1.15,color:T.text}}>Physics classes for<br/>every stage of learning.</h2>
             </div>
             <div {...fadeIn("courses",0.1)} style={{fontSize:14,color:T.textDim,maxWidth:320,lineHeight:1.68}}>
-              Class 9 to 12, board exams, and competitive prep — all at ₹500 per month. Taught with clarity, patience, and 30 years of experience.
+              Class 9 to 12, board exams, and competitive prep — starting at ₹2,000 per month. 12 sessions/month, 3 sessions/week, taught with clarity and 30 years of experience.
             </div>
           </div>
           <div className="courses-grid" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(260px,1fr))",gap:16}}>
@@ -727,21 +790,76 @@ export default function PhysicsProLanding() {
               <div className="tag" style={{background:T.tealDim,border:`1px solid rgba(13,148,136,0.28)`,color:T.teal}}><Zap size={11}/> Pricing</div>
             </div>
             <h2 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"clamp(28px,4vw,40px)",fontWeight:700,letterSpacing:"-0.02em",color:T.text,marginBottom:8}}>Simple, honest pricing.</h2>
-            <p style={{fontSize:14.5,color:T.textDim}}>₹500 per month for live online classes — Class 9 & 10 Science and Class 11 & 12 Physics. Free demo class available.</p>
+            <p style={{fontSize:14.5,color:T.textDim,maxWidth:560,lineHeight:1.7}}>12 live sessions per month, 3 sessions every week — all fees paid in advance. Free demo class available before you commit.</p>
           </div>
-          <div className="pricing-grid" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(240px,1fr))",gap:16}}>
+
+          {/* Session breakdown banner */}
+          <div {...fadeIn("pricing",0.08)} style={{display:"flex",alignItems:"center",gap:16,flexWrap:"wrap",padding:"16px 22px",borderRadius:14,background:isDark?"rgba(201,168,76,0.05)":"rgba(201,168,76,0.06)",border:`1px solid ${T.goldBorder}`,marginBottom:28}}>
+            <div style={{display:"flex",alignItems:"center",gap:8}}>
+              <CalendarDays size={16} color={T.gold}/>
+              <span style={{fontSize:13,color:T.textMid,fontWeight:500}}>12 sessions / month</span>
+            </div>
+            <div style={{width:1,height:20,background:T.border}}/>
+            <div style={{display:"flex",alignItems:"center",gap:8}}>
+              <Clock size={16} color={T.gold}/>
+              <span style={{fontSize:13,color:T.textMid,fontWeight:500}}>3 sessions / week</span>
+            </div>
+            <div style={{width:1,height:20,background:T.border}}/>
+            <div style={{display:"flex",alignItems:"center",gap:8}}>
+              <BadgeIndianRupee size={16} color={T.gold}/>
+              <span style={{fontSize:13,color:T.textMid,fontWeight:500}}>Payment in advance</span>
+            </div>
+            <div style={{marginLeft:"auto"}}>
+              <span style={{fontSize:11.5,color:T.textFaint,fontStyle:"italic"}}>All plans include doubt clearing & study material</span>
+            </div>
+          </div>
+
+          <div className="pricing-grid" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(260px,1fr))",gap:16}}>
             {plans.map((plan,i)=>(
-              <div key={i} {...fadeIn("pricing",0.1+i*0.1)} onMouseEnter={()=>setHoveredPlan(i)} onMouseLeave={()=>setHoveredPlan(null)} style={{background:plan.popular?(isDark?"rgba(201,168,76,0.05)":"rgba(201,168,76,0.04)"):T.surface,border:plan.popular?`1px solid ${T.goldBorder}`:`1px solid ${T.border}`,borderRadius:18,padding:28,display:"flex",flexDirection:"column",position:"relative",overflow:"hidden",transform:hoveredPlan===i?"translateY(-5px)":"translateY(0)",transition:"transform 0.25s",boxShadow:hoveredPlan===i?T.shadow:T.shadowCard}}>
-                {plan.popular&&<>
-                  <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:"linear-gradient(90deg,#c9a84c,#e8c96a)",borderRadius:"18px 18px 0 0"}}/>
-                  <span className="tag" style={{background:T.goldDim,border:`1px solid ${T.goldBorder}`,color:T.gold,marginBottom:16,alignSelf:"flex-start"}}>Most Popular</span>
-                </>}
-                {!plan.popular&&<div style={{height:8}}/>}
+              <div key={i} {...fadeIn("pricing",0.1+i*0.1)} onMouseEnter={()=>setHoveredPlan(i)} onMouseLeave={()=>setHoveredPlan(null)}
+                style={{background:plan.popular?(isDark?"rgba(201,168,76,0.05)":"rgba(201,168,76,0.04)"):T.surface,border:plan.popular?`1.5px solid ${T.goldBorder}`:`1px solid ${T.border}`,borderRadius:18,padding:"28px 24px",display:"flex",flexDirection:"column",position:"relative",overflow:"hidden",transform:hoveredPlan===i?"translateY(-5px)":"translateY(0)",transition:"transform 0.25s, box-shadow 0.25s",boxShadow:hoveredPlan===i?T.shadow:T.shadowCard}}>
+
+                {/* Top accent bar */}
+                {plan.popular && <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:"linear-gradient(90deg,#c9a84c,#e8c96a)",borderRadius:"18px 18px 0 0"}}/>}
+                <div style={{height: plan.popular ? 0 : 8}}/>
+
+                {/* Corner decoration */}
                 <div style={{position:"absolute",bottom:14,right:14,width:36,height:36,border:`1.5px dashed ${plan.accent}25`,borderRadius:8}}/>
-                <div style={{fontSize:12.5,color:T.textFaint,fontWeight:500,textTransform:"uppercase",letterSpacing:"0.1em",marginBottom:10}}>{plan.name}</div>
-                <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:42,fontWeight:700,color:T.text,lineHeight:1,marginBottom:4}}>{plan.price}</div>
-                <div style={{fontSize:12.5,color:T.textFaint,marginBottom:28}}>{plan.period}</div>
-                <ul style={{listStyle:"none",display:"flex",flexDirection:"column",gap:11,marginBottom:28,flex:1}}>
+
+                {/* Tag */}
+                <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}}>
+                  <span className="tag" style={{background:`${plan.accent}18`,border:`1px solid ${plan.accent}30`,color:plan.accent,padding:"4px 12px",fontSize:10.5}}>{plan.tag}</span>
+                  {plan.popular && <span style={{fontSize:10,color:T.textFaint,textTransform:"uppercase",letterSpacing:"0.1em",fontWeight:600}}>Recommended</span>}
+                </div>
+
+                {/* Plan name & label */}
+                <div style={{fontSize:12.5,color:T.textFaint,fontWeight:500,textTransform:"uppercase",letterSpacing:"0.1em",marginBottom:4}}>{plan.name}</div>
+                <div style={{fontSize:13,color:T.textDim,marginBottom:12}}>{plan.label}</div>
+
+                {/* Price */}
+                <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:46,fontWeight:700,color:T.text,lineHeight:1,marginBottom:4}}>{plan.price}</div>
+                <div style={{fontSize:12.5,color:T.textFaint,marginBottom:20}}>{plan.period}</div>
+
+                {/* Session pills */}
+                {plan.price !== "Free" && (
+                  <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:16}}>
+                    <span className="plan-session-pill" style={{background:isDark?"rgba(201,168,76,0.08)":"rgba(201,168,76,0.08)",border:`1px solid ${T.goldBorder}`,color:T.gold}}>
+                      <CalendarDays size={11}/> {plan.sessions}
+                    </span>
+                    <span className="plan-session-pill" style={{background:isDark?"rgba(201,168,76,0.05)":"rgba(201,168,76,0.05)",border:`1px solid ${T.goldBorder}`,color:T.textMid}}>
+                      <Clock size={11}/> {plan.sessionNote}
+                    </span>
+                  </div>
+                )}
+
+                {/* Advance payment notice */}
+                <div className="plan-advance-notice" style={{background:plan.price==="Free"?T.inputBg:(isDark?"rgba(201,168,76,0.06)":"rgba(201,168,76,0.07)"),border:`1px solid ${plan.price==="Free"?T.border:T.goldBorder}`,color:plan.price==="Free"?T.textFaint:T.gold}}>
+                  <BadgeIndianRupee size={13}/>
+                  <span>{plan.paymentNote}</span>
+                </div>
+
+                {/* Features list */}
+                <ul style={{listStyle:"none",display:"flex",flexDirection:"column",gap:10,marginBottom:24,flex:1}}>
                   {plan.features.map((f,j)=>(
                     <li key={j} style={{fontSize:13.5,color:f.ok?T.textMid:T.textFaint,display:"flex",alignItems:"center",gap:10}}>
                       {f.ok
@@ -751,11 +869,19 @@ export default function PhysicsProLanding() {
                     </li>
                   ))}
                 </ul>
-                <button className="btn" onClick={()=>openWA(`Hi Sunira ma'am! I'd like to join the ${plan.name} class.`)} style={{width:"100%",padding:13,borderRadius:11,fontSize:13.5,fontWeight:600,background:plan.popular?"linear-gradient(135deg,#c9a84c,#e8c96a)":T.inputBg,color:plan.popular?"#0b1120":T.textDim,border:plan.popular?"none":`1px solid ${T.border}`,display:"flex",alignItems:"center",justifyContent:"center",gap:7,boxShadow:plan.popular?T.shadowGold:"none"}}>
+
+                {/* CTA */}
+                <button className="btn" onClick={()=>openWA(`Hi Sunira ma'am! I'd like to join the ${plan.name} — ${plan.label}.`)} style={{width:"100%",padding:13,borderRadius:11,fontSize:13.5,fontWeight:600,background:plan.popular?"linear-gradient(135deg,#c9a84c,#e8c96a)":plan.price==="Free"?"linear-gradient(135deg,#25d366,#1aab55)":T.inputBg,color:plan.popular?"#0b1120":plan.price==="Free"?"white":T.textDim,border:(plan.popular||plan.price==="Free")?"none":`1px solid ${T.border}`,display:"flex",alignItems:"center",justifyContent:"center",gap:7,boxShadow:plan.popular?T.shadowGold:plan.price==="Free"?"0 4px 18px rgba(37,211,102,0.28)":"none"}}>
                   <MessageSquare size={14}/> {plan.price==="Free"?"Book Free Demo":"Enrol Now"}
                 </button>
               </div>
             ))}
+          </div>
+
+          {/* Bottom note */}
+          <div {...fadeIn("pricing",0.4)} style={{display:"flex",alignItems:"center",gap:10,marginTop:24,padding:"14px 18px",borderRadius:12,background:isDark?"rgba(59,130,246,0.06)":"rgba(59,130,246,0.05)",border:`1px solid rgba(59,130,246,0.2)`}}>
+            <AlertCircle size={15} color={T.blue} style={{flexShrink:0}}/>
+            <span style={{fontSize:12.5,color:T.textDim,lineHeight:1.6}}>All fees are collected <strong style={{color:T.text}}>in advance</strong> at the start of each month. A free demo class is available — no payment required before your first experience with Sunira ma'am.</span>
           </div>
         </section>
 
@@ -826,8 +952,9 @@ export default function PhysicsProLanding() {
                           <label style={{fontSize:11.5,color:T.textDim,display:"block",marginBottom:5,fontWeight:500}}>Course</label>
                           <select value={form.course} onChange={(e)=>setForm((p)=>({...p,course:e.target.value}))} style={{...inputCss("course"),padding:"9px 12px",fontSize:13,color:form.course?T.text:T.textFaint,appearance:"none"}}>
                             <option value="">Select…</option>
-                            <option value="Class 9 & 10 Science">Class 9 & 10 Science</option>
-                            <option value="Class 11 & 12 Physics">Class 11 & 12 Physics</option>
+                            <option value="Class 9 & 10 Science (₹3,000/mo)">Class 9 & 10 Science — ₹3,000/mo</option>
+                            <option value="Class 11 Physics (₹3,000/mo)">Class 11 Physics — ₹3,000/mo</option>
+                            <option value="Class 12 Physics (₹2,000/mo)">Class 12 Physics — ₹2,000/mo</option>
                             <option value="Olympiad / NTSE Prep">Olympiad / NTSE Prep</option>
                             <option value="Free Demo Class">Free Demo Class</option>
                           </select>
@@ -877,7 +1004,7 @@ export default function PhysicsProLanding() {
                 </div>
               </div>
               <p style={{fontSize:13,color:T.textDim,lineHeight:1.72,marginBottom:18}}>
-                Helping Class 9–12 students master Physics with clarity and confidence — online, affordable, and taught with 30+ years of expertise.
+                Helping Class 9–12 students master Physics with clarity and confidence — online, 12 sessions/month, 3 sessions/week. Starting at ₹2,000/month.
               </p>
               {/* Social/contact chips */}
               <div className="footer-contact-row" style={{display:"flex",gap:10,flexWrap:"wrap"}}>
@@ -909,8 +1036,14 @@ export default function PhysicsProLanding() {
               <div>
                 <div style={{fontSize:11,color:T.textFaint,textTransform:"uppercase",letterSpacing:"0.12em",fontWeight:600,marginBottom:16}}>Courses</div>
                 <div style={{display:"flex",flexDirection:"column",gap:10}}>
-                  {["Class 9 & 10 Science","Class 11 & 12 Physics","Olympiad & NTSE Prep","Free Demo Class"].map((c)=>(
-                    <button key={c} className="footer-link" onClick={()=>openWA(`Hi! I'm interested in ${c}.`)} style={{textAlign:"left",fontSize:13,color:T.textDim,padding:0}}>
+                  {[
+                    "Class 9 & 10 — ₹3,000/mo",
+                    "Class 11 — ₹3,000/mo",
+                    "Class 12 — ₹2,000/mo",
+                    "Olympiad & NTSE Prep",
+                    "Free Demo Class",
+                  ].map((c,i)=>(
+                    <button key={i} className="footer-link" onClick={()=>openWA(`Hi! I'm interested in ${c}.`)} style={{textAlign:"left",fontSize:13,color:T.textDim,padding:0}}>
                       {c}
                     </button>
                   ))}
