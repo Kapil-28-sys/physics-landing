@@ -148,13 +148,9 @@ export default function PhysicsProLanding() {
   const [emailStatus, setEmailStatus] = useState("idle");
   const [emailError, setEmailError] = useState("");
   const [errors, setErrors] = useState({});
-  const [slideIdx, setSlideIdx] = useState(0);
-  const [sliding, setSliding] = useState(false);
-  const [slideDir, setSlideDir] = useState(1);
   const [aboutExp, setAboutExp] = useState(false);
   const [modal, setModal] = useState(null);
   const [hovPlan, setHovPlan] = useState(null);
-  const autoRef = useRef(null);
   const secRefs = useRef({});
   const navRef = useRef(null);
 
@@ -162,12 +158,11 @@ export default function PhysicsProLanding() {
   const C = mkC(isDark);
 
   const navLinks = [
-    { label: "Home",     id: "hero",         Icon: Home },
-    { label: "About",    id: "about",        Icon: GraduationCap },
-    { label: "Courses",  id: "courses",      Icon: BookIcon },
-    { label: "Results",  id: "testimonials", Icon: BarChart2 },
-    { label: "Pricing",  id: "pricing",      Icon: CreditCard },
-    { label: "Contact",  id: "contact",      Icon: Phone },
+    { label: "Home",     id: "hero",     Icon: Home },
+    { label: "About",    id: "about",    Icon: GraduationCap },
+    { label: "Courses",  id: "courses",  Icon: BookIcon },
+    { label: "Pricing",  id: "pricing",  Icon: CreditCard },
+    { label: "Contact",  id: "contact",  Icon: Phone },
   ];
 
   const reg = (id) => (el) => { if (el) secRefs.current[id] = el; };
@@ -202,27 +197,6 @@ export default function PhysicsProLanding() {
     document.querySelectorAll("[data-obs]").forEach(el => obs.observe(el));
     return () => obs.disconnect();
   }, []);
-
-  const testimonials = [
-    { text: "Sunira ma'am's way of breaking down complex concepts is unmatched. I went from dreading Physics to genuinely enjoying it. Cleared JEE with AIR 312.", name: "Aryan Rao", sub: "IIT Bombay · JEE 2025, AIR 312", initials: "AR", score: "AIR 312", accent: C.blue },
-    { text: "Ma'am's patient teaching style and her focus on concepts rather than rote learning made all the difference. I scored 690 in NEET.", name: "Simran Mehra", sub: "NEET 2025 · Score 690/720", initials: "SM", score: "690/720", accent: C.orange },
-    { text: "Her NTSE preparation is incredibly thorough. The Mission NTSE book she authored was our bible. Got through with a top rank.", name: "Dev Kumar", sub: "NTSE Scholar · Class 10, DPS", initials: "DK", score: "NTSE", accent: C.blue },
-    { text: "From 55% in Class 11 to 96% in boards — Sunira ma'am's structured revision plan and personalised attention made all the difference.", name: "Priya Nair", sub: "CBSE 2025 · 96% in Physics", initials: "PN", score: "96%", accent: C.orange },
-    { text: "22 years at DPS Faridabad and counting — you can feel the depth of experience in every session. She knows exactly where students get stuck.", name: "Rohan Gupta", sub: "Class 12 Alumni · DPS Faridabad", initials: "RG", score: "AIR 201", accent: C.blue },
-  ];
-
-  const goTo = useCallback((dir) => {
-    if (sliding) return;
-    setSlideDir(dir); setSliding(true);
-    setTimeout(() => { setSlideIdx(i => (i + dir + testimonials.length) % testimonials.length); setSliding(false); }, 340);
-  }, [sliding, testimonials.length]);
-
-  useEffect(() => {
-    autoRef.current = setInterval(() => goTo(1), 5000);
-    return () => clearInterval(autoRef.current);
-  }, [goTo]);
-
-  const resetAuto = () => { clearInterval(autoRef.current); autoRef.current = setInterval(() => goTo(1), 5000); };
 
   const fi = (id, delay = 0) => ({
     style: {
@@ -287,14 +261,14 @@ export default function PhysicsProLanding() {
 
   const footerLinks = [
     { label: "Privacy", content: (<><p style={{ marginBottom: 12 }}>All personal information — name, phone, email — is used solely to respond to your enquiry and coordinate enrollment. We do not sell or share your data with third parties.</p><p>Data via our contact form is transmitted securely through Web3Forms and stored only for communication.</p></>) },
-    { label: "Terms",   content: (<><p style={{ marginBottom: 12 }}>By enrolling, you agree to:</p><ul style={{ paddingLeft: 20 }}><li style={{ marginBottom: 8 }}>Fees collected monthly in advance; non-refundable after first week.</li><li style={{ marginBottom: 8 }}>Regular Tuition (₹3,000/mo): Class 9, 10 & 11 — 12 sessions, 3/week.</li><li style={{ marginBottom: 8 }}>Introductory (₹2,000/mo): Class 12 — 12 sessions, 3/week.</li><li style={{ marginBottom: 8 }}>Recordings accessible 30 days. Sharing externally not permitted.</li></ul></>) },
+    { label: "Terms",   content: (<><p style={{ marginBottom: 12 }}>By enrolling, you agree to:</p><ul style={{ paddingLeft: 20 }}><li style={{ marginBottom: 8 }}>Fees collected monthly in advance; non-refundable after first week.</li><li style={{ marginBottom: 8 }}>Class 9 & 10 (₹2,500/mo) & Class 11 (₹3,000/mo): 12 sessions, 3/week.</li><li style={{ marginBottom: 8 }}>Class 12 (₹3,000/mo): 12 sessions, 3/week.</li><li style={{ marginBottom: 8 }}>Recordings accessible 30 days. Sharing externally not permitted.</li></ul></>) },
     { label: "Refunds", content: (<><ul style={{ paddingLeft: 20 }}><li style={{ marginBottom: 8 }}>Free demo always available — no payment before trying.</li><li style={{ marginBottom: 8 }}>Within 7 days of payment: full refund if before 2nd class.</li><li style={{ marginBottom: 8 }}>After 7 days: no refund for current month.</li><li style={{ marginBottom: 8 }}>Technical failure on our end: makeup session or credit.</li></ul></>) },
     { label: "Contact", action: () => scrollTo(navLinks.find(n => n.id === "contact")) },
   ];
 
   const courses = [
-    { Icon: School, accent: C.blue,   title: "Class 9 & 10 Science",  price: "₹3,000/mo", tag: "Most Popular", desc: "Complete CBSE Science with deep Physics focus — board prep, Olympiad & NTSE training. 12 sessions/month, 3/week.", featured: true },
-    { Icon: Atom,   accent: C.orange, title: "Class 11 & 12 Physics",  price: "₹2,000–3,000/mo", tag: "Board + JEE/NEET", desc: "In-depth Physics for CBSE boards and entrance exams — JEE, NEET foundation. Strong conceptual base guaranteed.", featured: false },
+    { Icon: School, accent: C.blue,   title: "Class 9 & 10 Science",  price: "₹2,500/mo", tag: "Most Popular", desc: "Complete CBSE Science with deep Science focus — board prep, Olympiad & NTSE training. 12 sessions/month, 3/week.", featured: true },
+    { Icon: Atom,   accent: C.orange, title: "Class 11 & 12 Physics",  price: "₹3,000/mo", tag: "Board + JEE/NEET", desc: "In-depth Physics for CBSE boards and entrance exams — JEE, NEET foundation. Strong conceptual base guaranteed.", featured: false },
     { Icon: Award,  accent: C.blue,   title: "Olympiad & NTSE Prep",   price: "Ask us",  tag: "Competitive",    desc: "Specialised training for IMO, ISO, NTSE. Authored Mission NTSE Class 8 & 10 — the definitive prep resource.", featured: false },
   ];
 
@@ -309,14 +283,14 @@ export default function PhysicsProLanding() {
 
   const plans = [
     {
-      name: "Regular Tuition", label: "Class 9, 10 & 11", price: "₹3,000", period: "/month",
+      name: "Class 9 & 10", label: "Science", price: "₹2,500", period: "/month",
       accent: C.blue, popular: true, tag: "Most Popular",
       features: ["12 live sessions/month", "3 sessions every week", "Doubt clearing included", "Study material provided", "NTSE / Olympiad prep", "Full advance payment"],
       noFeats: [],
     },
     {
-      name: "Introductory",    label: "Class 12",         price: "₹2,000", period: "/month",
-      accent: C.orange, popular: false, tag: "Class 12 Special",
+      name: "Class 11 & 12", label: "Physics", price: "₹3,000", period: "/month",
+      accent: C.orange, popular: false, tag: "Board + JEE/NEET",
       features: ["12 live sessions/month", "3 sessions every week", "Doubt clearing included", "Study material provided", "JEE / NEET foundation", "Full advance payment"],
       noFeats: [],
     },
@@ -355,7 +329,6 @@ export default function PhysicsProLanding() {
         .btn:hover{opacity:${isDark?"0.86":"1"};transform:translateY(-1px);}
         .btn:active{transform:scale(0.97);}
 
-        /* ── Desktop nav — taller to fit bigger logo ── */
         .dnav{
           position:fixed;top:0;left:0;right:0;z-index:50;height:72px;
           display:flex;align-items:center;justify-content:space-between;padding:0 48px;
@@ -420,10 +393,6 @@ export default function PhysicsProLanding() {
 
         .ferr{font-size:11.5px;color:#e04040;margin-top:4px;display:flex;align-items:center;gap:4px;}
 
-        @keyframes slideR{from{opacity:0;transform:translateX(36px);}to{opacity:1;transform:translateX(0);}}
-        @keyframes slideL{from{opacity:0;transform:translateX(-36px);}to{opacity:1;transform:translateX(0);}}
-        .anim-r{animation:slideR 0.32s ease forwards;}
-        .anim-l{animation:slideL 0.32s ease forwards;}
         @keyframes spin{to{transform:rotate(360deg);}}
 
         .scan-lines{position:absolute;inset:0;pointer-events:none;z-index:0;
@@ -459,15 +428,9 @@ export default function PhysicsProLanding() {
 
       {/* ══ DESKTOP NAV ══ */}
       <nav ref={navRef} className={`dnav${scrolled ? " scrolled" : ""}`}>
-
-        {/* Brand — large logo + text stack */}
         <div style={{ display: "flex", alignItems: "center", gap: 14, cursor: "pointer" }} onClick={() => scrollTo(navLinks[0])}>
-          {/* Logo image — 56px app-icon style */}
           <Logo size={90} />
-           
         </div>
-
-        {/* Links */}
         <ul style={{ display: "flex", listStyle: "none", gap: 2, alignItems: "center" }}>
           {navLinks.map(n => (
             <li key={n.label}>
@@ -484,8 +447,6 @@ export default function PhysicsProLanding() {
             </li>
           ))}
         </ul>
-
-        {/* Actions */}
         <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
           <button
             className="btn"
@@ -653,11 +614,18 @@ export default function PhysicsProLanding() {
                     </div>
                   ))}
                 </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "13px 16px", borderRadius: 10, background: C.bgAlt, border: `1px solid ${C.blueBorder}`, marginBottom: 18 }}>
-                  <School size={20} color={C.blue} style={{ flexShrink: 0 }} />
+                {/* Address */}
+                <div style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "13px 16px", borderRadius: 10, background: C.bgAlt, border: `1px solid ${C.blueBorder}`, marginBottom: 14 }}>
+                  <School size={20} color={C.blue} style={{ flexShrink: 0, marginTop: 2 }} />
                   <div>
                     <div style={{ fontSize: 13.5, fontWeight: 700, color: C.ink }}>Delhi Public School, Faridabad</div>
                     <div style={{ fontSize: 12, color: C.inkFaint, marginTop: 2 }}>22+ years — one of India's most reputed schools</div>
+                  </div>
+                </div>
+                <div style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "11px 16px", borderRadius: 10, background: C.bgAlt, border: `1px solid ${C.border}`, marginBottom: 18 }}>
+                  <Target size={16} color={C.orange} style={{ flexShrink: 0, marginTop: 2 }} />
+                  <div style={{ fontSize: 12.5, color: C.inkMid, lineHeight: 1.6 }}>
+                    <span style={{ fontWeight: 700, color: C.ink }}>Address: </span>Sector 9, Faridabad, Haryana
                   </div>
                 </div>
                 <button className="btn" onClick={() => openWA("Hi! I'd like to book a free demo class at Sunira's Science Academy.")}
@@ -681,7 +649,7 @@ export default function PhysicsProLanding() {
                 <h2 className="sh">Physics classes for<br /><span className="grad">every stage of learning.</span></h2>
               </div>
               <div {...fi("courses", 0.1)} style={{ fontSize: 14, color: C.inkMid, maxWidth: 300, lineHeight: 1.72 }}>
-                Class 9 to 12, boards, competitive prep — from ₹2,000/month. 12 sessions/month, 3/week.
+                Class 9 to 12, boards, competitive prep — from ₹2,500/month. 12 sessions/month, 3/week.
               </div>
             </div>
             <div className="g3" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 18 }}>
@@ -725,59 +693,6 @@ export default function PhysicsProLanding() {
                   <div style={{ fontSize: 14.5, fontWeight: 700, color: C.ink, marginBottom: 8 }}>{f.title}</div>
                   <div style={{ fontSize: 13.5, color: C.inkMid, lineHeight: 1.7 }}>{f.desc}</div>
                 </div>
-              ))}
-            </div>
-          </div>
-        </section>
-        <div className="hr" />
-
-        {/* ══ TESTIMONIALS ══ */}
-        <section id="testimonials" ref={reg("testimonials")} data-obs className="sec-alt">
-          <div className="max">
-            <div {...fi("testimonials", 0)} style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: 20, marginBottom: 40 }}>
-              <div>
-                <div className="eyebrow">Student Results</div>
-                <h2 className="sh">Students who <span className="grad">made it.</span></h2>
-              </div>
-              <div style={{ display: "flex", gap: 10 }}>
-                <button className="btn" onClick={() => { goTo(-1); resetAuto(); }}
-                  style={{ width: 42, height: 42, borderRadius: 10, background: "transparent", border: `1.5px solid ${C.borderMed}`, display: "flex", alignItems: "center", justifyContent: "center", color: C.inkMid, transition: "all 0.18s" }}
-                  onMouseEnter={e => { e.currentTarget.style.background = C.navHovBg; e.currentTarget.style.borderColor = C.blueBorder; e.currentTarget.style.color = C.blue; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = C.borderMed; e.currentTarget.style.color = C.inkMid; }}><ChevronLeft size={18} /></button>
-                <button className="btn" onClick={() => { goTo(1); resetAuto(); }}
-                  style={{ width: 42, height: 42, borderRadius: 10, background: `linear-gradient(90deg,${C.blue},#1A7AC0)`, border: "none", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", boxShadow: C.blueGlow, transition: "all 0.18s" }}
-                  onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = isDark ? "0 0 24px rgba(43,159,232,0.5)" : "0 6px 20px rgba(43,159,232,0.35)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = C.blueGlow; }}><ChevronRight size={18} /></button>
-              </div>
-            </div>
-            <div style={{ display: "flex", gap: 18, overflow: "hidden" }}>
-              {[-1, 0, 1].map((offset) => {
-                const idx = (slideIdx + offset + testimonials.length) % testimonials.length;
-                const t = testimonials[idx];
-                const isC = offset === 0;
-                return (
-                  <div key={idx + "-" + offset} onClick={() => !isC && goTo(offset)}
-                    className={isC && sliding ? (slideDir === 1 ? "anim-r" : "anim-l") : ""}
-                    style={{ flex: isC ? "0 0 60%" : "0 0 20%", background: C.bgCard, border: `1px solid ${isC ? t.accent + "40" : C.border}`, borderRadius: 14, padding: isC ? "28px" : "18px 14px", opacity: isC ? 1 : 0.4, cursor: isC ? "default" : "pointer", transform: isC ? "scale(1)" : "scale(0.97)", transition: "all 0.32s ease", position: "relative", overflow: "hidden", boxShadow: isC ? `0 0 28px ${t.accent}18` : "none" }}>
-                    {isC && <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg,${t.accent},transparent)` }} />}
-                    {isC && <div style={{ fontSize: 56, color: t.accent, lineHeight: 0.7, marginBottom: 16, opacity: 0.25, fontFamily: "'Exo 2',sans-serif", fontWeight: 800 }}>"</div>}
-                    <p style={{ fontSize: isC ? 15 : 12, color: isC ? C.inkMid : C.inkFaint, lineHeight: 1.75, marginBottom: isC ? 20 : 10, fontStyle: "italic", display: "-webkit-box", WebkitLineClamp: isC ? 5 : 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{t.text}</p>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                      <div style={{ width: isC ? 36 : 28, height: isC ? 36 : 28, borderRadius: "50%", background: t.accent + "18", border: `1.5px solid ${t.accent}35`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: isC ? 11 : 9, fontWeight: 700, color: t.accent, flexShrink: 0 }}>{t.initials}</div>
-                      <div>
-                        <div style={{ fontSize: isC ? 13 : 10.5, fontWeight: 700, color: C.ink }}>{t.name}</div>
-                        {isC && <div style={{ fontSize: 11, color: C.inkFaint, marginTop: 2 }}>{t.sub}</div>}
-                      </div>
-                      {isC && <div style={{ marginLeft: "auto", fontSize: 14, fontWeight: 800, color: t.accent, fontFamily: "'Exo 2',sans-serif" }}>{t.score}</div>}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-            <div style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 24 }}>
-              {testimonials.map((_, i) => (
-                <button key={i} className="btn" onClick={() => { setSlideDir(i > slideIdx ? 1 : -1); setSliding(true); setTimeout(() => { setSlideIdx(i); setSliding(false); }, 340); resetAuto(); }}
-                  style={{ width: i === slideIdx ? 24 : 8, height: 8, borderRadius: 4, background: i === slideIdx ? C.blue : C.borderMed, border: "none", padding: 0, transition: "all 0.28s" }} />
               ))}
             </div>
           </div>
@@ -859,7 +774,7 @@ export default function PhysicsProLanding() {
               <p style={{ fontSize: 15, color: C.inkMid, lineHeight: 1.78, marginBottom: 36, marginTop: 8 }}>Fill the form and we'll reach you via WhatsApp or email — usually within the hour.</p>
               <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                 {[
-                  { Icon: MessageSquare, label: "WhatsApp", value: "+91 98765 43210", action: () => openWA(), accent: "#25d366" },
+                  { Icon: MessageSquare, label: "WhatsApp", value: "+91 95822 19246", action: () => openWA(), accent: "#25d366" },
                   { Icon: Mail, label: "Email", value: "vaishnavkapil412@gmail.com", action: openMail, accent: C.blue },
                 ].map((c, i) => (
                   <div key={i} onClick={c.action} className="contact-row"
@@ -913,9 +828,9 @@ export default function PhysicsProLanding() {
                         <label style={{ fontSize: 11.5, color: C.inkMid, display: "block", marginBottom: 5, fontWeight: 600 }}>Course</label>
                         <select value={form.course} onChange={e => setForm(p => ({ ...p, course: e.target.value }))} style={{ ...inputSty("course"), appearance: "none" }}>
                           <option value="">Select…</option>
-                          <option value="Class 9 & 10 Science (₹3,000/mo)">Class 9 & 10 — ₹3,000/mo</option>
+                          <option value="Class 9 & 10 Science (₹2,500/mo)">Class 9 & 10 — ₹2,500/mo</option>
                           <option value="Class 11 Physics (₹3,000/mo)">Class 11 — ₹3,000/mo</option>
-                          <option value="Class 12 Physics (₹2,000/mo)">Class 12 — ₹2,000/mo</option>
+                          <option value="Class 12 Physics (₹3,000/mo)">Class 12 — ₹3,000/mo</option>
                           <option value="Olympiad / NTSE Prep">Olympiad / NTSE</option>
                           <option value="Free Demo Class">Free Demo</option>
                         </select>
@@ -958,7 +873,6 @@ export default function PhysicsProLanding() {
           <div style={{ position: "relative", zIndex: 1 }}>
             <div className="footer-top" style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: 40, marginBottom: 40 }}>
               <div style={{ maxWidth: 320 }}>
-                {/* Footer brand — big logo + text */}
                 <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
                   <Logo size={52} />
                   <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
@@ -969,7 +883,7 @@ export default function PhysicsProLanding() {
                   </div>
                 </div>
                 <p style={{ fontSize: 13, color: C.inkMid, lineHeight: 1.72, marginBottom: 18 }}>
-                  Helping Class 9–12 students master Physics with clarity and confidence. Online, 12 sessions/month. Starting at ₹2,000/month.
+                  Helping Class 9–12 students master Physics with clarity and confidence. Online, 12 sessions/month. Starting at ₹2,500/month.
                 </p>
                 <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
                   {[
@@ -987,7 +901,7 @@ export default function PhysicsProLanding() {
               <div style={{ display: "flex", gap: 48, flexWrap: "wrap" }}>
                 {[
                   { title: "Navigation", items: navLinks.map(n => ({ label: n.label, action: () => scrollTo(n) })) },
-                  { title: "Courses", items: ["Class 9 & 10 — ₹3,000/mo", "Class 11 — ₹3,000/mo", "Class 12 — ₹2,000/mo", "Olympiad & NTSE", "Free Demo"].map(c => ({ label: c, action: () => openWA(`Hi! I'm interested in ${c}.`) })) },
+                  { title: "Courses", items: ["Class 9 & 10 — ₹2,500/mo", "Class 11 — ₹3,000/mo", "Class 12 — ₹3,000/mo", "Olympiad & NTSE", "Free Demo"].map(c => ({ label: c, action: () => openWA(`Hi! I'm interested in ${c}.`) })) },
                   { title: "Legal", items: footerLinks.map(l => ({ label: l.label, action: l.action || (() => setModal(l.label)) })) },
                 ].map((col, i) => (
                   <div key={i}>
