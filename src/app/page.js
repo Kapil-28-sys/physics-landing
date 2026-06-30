@@ -1,8 +1,4 @@
-import CoursesSection from "./component/CoursesSection";
-import EnrollFormSection from "./component/EnrollFormSection";
-import FeaturesSection from "./component/FeaturesSection";
-import Footer from "./component/Footer";
-import HeroSection from "./component/Herosection";
+ 
 import Navbar from "./component/navbar"; 
 
 export default function Home() {

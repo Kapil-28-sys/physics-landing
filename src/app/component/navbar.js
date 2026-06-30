@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 
 const WHATSAPP_NUMBER = "919876543210";
-const WEB3FORMS_KEY = "0272d72a-08b2-495c-ada8-9d69ecc98902";
+const CONTACT_EMAIL = "suniraphysicsacademy@gmail.com";
 const TEACHER_PHOTO_URL = "/mamphy.png";
 const LOGO_URL = "/phys-logo.png";
 
@@ -145,8 +145,6 @@ export default function PhysicsProLanding() {
   const [vis, setVis] = useState({});
   const [form, setForm] = useState({ name: "", phone: "", email: "", course: "", message: "" });
   const [submitted, setSubmitted] = useState(false);
-  const [emailStatus, setEmailStatus] = useState("idle");
-  const [emailError, setEmailError] = useState("");
   const [errors, setErrors] = useState({});
   const [aboutExp, setAboutExp] = useState(false);
   const [modal, setModal] = useState(null);
@@ -223,24 +221,19 @@ export default function PhysicsProLanding() {
     setSubmitted(true);
   };
 
-  const handleEmail = async () => {
+  const handleEmail = () => {
     const e = validate(); if (Object.keys(e).length) { setErrors(e); return; }
-    setErrors({}); setEmailStatus("sending");
-    try {
-      const res = await fetch("https://api.web3forms.com/submit", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ access_key: WEB3FORMS_KEY, subject: `New Enquiry from ${form.name}`, name: form.name, email: form.email || "Not provided", phone: form.phone, course: form.course || "Not specified", message: form.message || "—", botcheck: false }),
-      });
-      const data = await res.json();
-      if (data.success) { setEmailStatus("success"); setForm({ name: "", phone: "", email: "", course: "", message: "" }); }
-      else { setEmailStatus("error"); setEmailError(data.message || "Failed."); }
-    } catch { setEmailStatus("error"); setEmailError("Network error. Try again."); }
+    setErrors({});
+    const subject = `New Enquiry from ${form.name}`;
+    const body = `Name: ${form.name}\nPhone: ${form.phone}\nEmail: ${form.email || "Not provided"}\nCourse: ${form.course || "Not specified"}\nMessage: ${form.message || "—"}`;
+    window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${CONTACT_EMAIL}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, "_blank");
+    setSubmitted(true);
   };
 
   const openWA  = (msg = "Hi! I'd like to know more about Sunira's Science Academy.") =>
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, "_blank");
   const openMail = () =>
-    window.open("https://mail.google.com/mail/?view=cm&fs=1&to=vaishnavkapil412@gmail.com", "_blank");
+    window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${CONTACT_EMAIL}`, "_blank");
 
   const inputSty = (field) => ({
     width: "100%", padding: "11px 14px", borderRadius: 8,
@@ -260,7 +253,7 @@ export default function PhysicsProLanding() {
   });
 
   const footerLinks = [
-    { label: "Privacy", content: (<><p style={{ marginBottom: 12 }}>All personal information — name, phone, email — is used solely to respond to your enquiry and coordinate enrollment. We do not sell or share your data with third parties.</p><p>Data via our contact form is transmitted securely through Web3Forms and stored only for communication.</p></>) },
+    { label: "Privacy", content: (<><p style={{ marginBottom: 12 }}>All personal information — name, phone, email — is used solely to respond to your enquiry and coordinate enrollment. We do not sell or share your data with third parties.</p><p>Data submitted via our contact form is used only for communication with you.</p></>) },
     { label: "Terms",   content: (<><p style={{ marginBottom: 12 }}>By enrolling, you agree to:</p><ul style={{ paddingLeft: 20 }}><li style={{ marginBottom: 8 }}>Fees collected monthly in advance; non-refundable after first week.</li><li style={{ marginBottom: 8 }}>Class 9 & 10 (₹2,500/mo) & Class 11 (₹3,000/mo): 12 sessions, 3/week.</li><li style={{ marginBottom: 8 }}>Class 12 (₹3,000/mo): 12 sessions, 3/week.</li><li style={{ marginBottom: 8 }}>Recordings accessible 30 days. Sharing externally not permitted.</li></ul></>) },
     { label: "Refunds", content: (<><ul style={{ paddingLeft: 20 }}><li style={{ marginBottom: 8 }}>Free demo always available — no payment before trying.</li><li style={{ marginBottom: 8 }}>Within 7 days of payment: full refund if before 2nd class.</li><li style={{ marginBottom: 8 }}>After 7 days: no refund for current month.</li><li style={{ marginBottom: 8 }}>Technical failure on our end: makeup session or credit.</li></ul></>) },
     { label: "Contact", action: () => scrollTo(navLinks.find(n => n.id === "contact")) },
@@ -775,7 +768,7 @@ export default function PhysicsProLanding() {
               <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                 {[
                   { Icon: MessageSquare, label: "WhatsApp", value: "+91 95822 19246", action: () => openWA(), accent: "#25d366" },
-                  { Icon: Mail, label: "Email", value: "vaishnavkapil412@gmail.com", action: openMail, accent: C.blue },
+                  { Icon: Mail, label: "Email", value: CONTACT_EMAIL, action: openMail, accent: C.blue },
                 ].map((c, i) => (
                   <div key={i} onClick={c.action} className="contact-row"
                     style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 18px", borderRadius: 11, background: C.bgCard, border: `1px solid ${C.border}`, cursor: "pointer" }}
@@ -842,8 +835,6 @@ export default function PhysicsProLanding() {
                         onFocus={e => { e.target.style.borderColor = C.blue; e.target.style.boxShadow = isDark ? "none" : "0 0 0 3px rgba(43,159,232,0.12)"; }}
                         onBlur={e => { e.target.style.borderColor = C.inputBorder; e.target.style.boxShadow = isDark ? "none" : "0 1px 3px rgba(0,0,0,0.06)"; }} />
                     </div>
-                    {emailStatus === "success" && <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 14px", borderRadius: 8, background: C.blueDim, border: `1px solid ${C.blueBorder}`, fontSize: 13, color: C.blue }}><Check size={14} /> Email sent!</div>}
-                    {emailStatus === "error" && <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 14px", borderRadius: 8, background: "rgba(224,64,64,0.08)", border: "1px solid rgba(224,64,64,0.25)", fontSize: 12.5, color: "#e04040" }}><X size={14} />{emailError}</div>}
                     <div className="row2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 4 }}>
                       <button className="btn" onClick={handleWA}
                         style={{ padding: "11px", borderRadius: 9, fontSize: 13, fontWeight: 700, background: "#25d366", color: "#fff", border: "none", display: "flex", alignItems: "center", justifyContent: "center", gap: 7, transition: "all 0.18s" }}
@@ -851,14 +842,14 @@ export default function PhysicsProLanding() {
                         onMouseLeave={e => { e.currentTarget.style.background = "#25d366"; e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = ""; }}>
                         <MessageSquare size={13} /> WhatsApp
                       </button>
-                      <button className="btn" onClick={handleEmail} disabled={emailStatus === "sending"}
-                        style={{ padding: "11px", borderRadius: 9, fontSize: 13, fontWeight: 700, background: `linear-gradient(90deg,${C.blue},#1A7AC0)`, color: "#fff", border: "none", display: "flex", alignItems: "center", justifyContent: "center", gap: 7, opacity: emailStatus === "sending" ? 0.7 : 1, boxShadow: C.blueGlow, transition: "all 0.18s" }}
-                        onMouseEnter={e => { if (emailStatus !== "sending") { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = isDark ? "0 0 24px rgba(43,159,232,0.4)" : "0 6px 20px rgba(43,159,232,0.3)"; } }}
+                      {/* <button className="btn" onClick={handleEmail}
+                        style={{ padding: "11px", borderRadius: 9, fontSize: 13, fontWeight: 700, background: `linear-gradient(90deg,${C.blue},#1A7AC0)`, color: "#fff", border: "none", display: "flex", alignItems: "center", justifyContent: "center", gap: 7, boxShadow: C.blueGlow, transition: "all 0.18s" }}
+                        onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = isDark ? "0 0 24px rgba(43,159,232,0.4)" : "0 6px 20px rgba(43,159,232,0.3)"; }}
                         onMouseLeave={e => { e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = C.blueGlow; }}>
-                        {emailStatus === "sending" ? <><span style={{ width: 13, height: 13, border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", display: "inline-block", animation: "spin 0.7s linear infinite" }} />Sending…</> : <><Mail size={13} /> Send Email</>}
-                      </button>
+                        <Mail size={13} /> Send Email
+                      </button> */}
                     </div>
-                    <p style={{ fontSize: 11, color: C.inkFaint, textAlign: "center" }}>WhatsApp opens a chat · Email sends directly to our inbox</p>
+                    <p style={{ fontSize: 11, color: C.inkFaint, textAlign: "center" }}>WhatsApp opens a chat · Email opens Gmail to {CONTACT_EMAIL}</p>
                   </div>
                 </div>
               )}
