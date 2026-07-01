@@ -10,9 +10,9 @@ import {
   Shield, ExternalLink, CalendarDays, BadgeIndianRupee, AlertCircle,
 } from "lucide-react";
 
-const WHATSAPP_NUMBER = "919876543210";
+const WHATSAPP_NUMBER = "919582219246";
 const CONTACT_EMAIL = "suniraphysicsacademy@gmail.com";
-const TEACHER_PHOTO_URL = "/mamphy.png";
+const TEACHER_PHOTO_URL = "/physicmam.png";
 const LOGO_URL = "/phys-logo.png";
 
 const mkC = (dark) => ({
