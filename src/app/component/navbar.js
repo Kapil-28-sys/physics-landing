@@ -14,6 +14,8 @@ const WHATSAPP_NUMBER = "919582219246";
 const CONTACT_EMAIL = "suniraphysicsacademy@gmail.com";
 const TEACHER_PHOTO_URL = "/physicmam.png";
 const LOGO_URL = "/phys-logo.png";
+const API_BASE_URL = "https://backend.sunirascienceacademy.com";
+const API_ENDPOINT = `${API_BASE_URL}/api/create-enquiry`;
 
 const mkC = (dark) => ({
   bg:           dark ? "#08090F" : "#F5F8FF",
@@ -146,6 +148,8 @@ export default function PhysicsProLanding() {
   const [form, setForm] = useState({ name: "", phone: "", email: "", course: "", message: "" });
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState({});
+  const [submitting, setSubmitting] = useState(false);
+  const [apiError, setApiError] = useState("");
   const [aboutExp, setAboutExp] = useState(false);
   const [modal, setModal] = useState(null);
   const [hovPlan, setHovPlan] = useState(null);
@@ -213,17 +217,58 @@ export default function PhysicsProLanding() {
     return e;
   };
 
-  const handleWA = () => {
+  // Posts the enquiry to the backend. Never blocks WhatsApp/email fallback —
+  // if the API call fails, we still let the user reach out directly.
+  const postEnquiry = async () => {
+    setApiError("");
+    try {
+      const res = await fetch(API_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.name.trim(),
+          whatsapp: form.phone.trim(),
+          email: form.email.trim() || undefined,
+          course: form.course || undefined,
+          message: form.message.trim() || undefined,
+        }),
+      });
+      if (!res.ok) throw new Error(`Request failed with status ${res.status}`);
+      const data = await res.json().catch(() => null);
+      return { ok: true, data };
+    } catch (err) {
+      console.error("create-enquiry API error:", err);
+      setApiError("Couldn't save your enquiry automatically, but you can still reach us below.");
+      return { ok: false, data: null };
+    }
+  };
+
+  const handleSubmit = async () => {
     const e = validate(); if (Object.keys(e).length) { setErrors(e); return; }
     setErrors({});
+    setSubmitting(true);
+    const result = await postEnquiry();
+    setSubmitting(false);
+    if (result.ok) setSubmitted(true);
+  };
+
+  const handleWA = async () => {
+    const e = validate(); if (Object.keys(e).length) { setErrors(e); return; }
+    setErrors({});
+    setSubmitting(true);
+    await postEnquiry();
+    setSubmitting(false);
     const body = `Hi! 👋\nName: ${form.name}\nPhone: ${form.phone}\nEmail: ${form.email || "—"}\nCourse: ${form.course || "—"}\nMessage: ${form.message || "—"}\n\nI'd like to know more about Sunira's Science Academy.`;
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(body)}`, "_blank");
     setSubmitted(true);
   };
 
-  const handleEmail = () => {
+  const handleEmail = async () => {
     const e = validate(); if (Object.keys(e).length) { setErrors(e); return; }
     setErrors({});
+    setSubmitting(true);
+    await postEnquiry();
+    setSubmitting(false);
     const subject = `New Enquiry from ${form.name}`;
     const body = `Name: ${form.name}\nPhone: ${form.phone}\nEmail: ${form.email || "Not provided"}\nCourse: ${form.course || "Not specified"}\nMessage: ${form.message || "—"}`;
     window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${CONTACT_EMAIL}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, "_blank");
@@ -836,19 +881,20 @@ export default function PhysicsProLanding() {
                         onBlur={e => { e.target.style.borderColor = C.inputBorder; e.target.style.boxShadow = isDark ? "none" : "0 1px 3px rgba(0,0,0,0.06)"; }} />
                     </div>
                     <div className="row2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 4 }}>
-                      <button className="btn" onClick={handleWA}
-                        style={{ padding: "11px", borderRadius: 9, fontSize: 13, fontWeight: 700, background: "#25d366", color: "#fff", border: "none", display: "flex", alignItems: "center", justifyContent: "center", gap: 7, transition: "all 0.18s" }}
-                        onMouseEnter={e => { e.currentTarget.style.background = "#1fbb5b"; e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 6px 18px rgba(37,211,102,0.3)"; }}
+                      <button className="btn" onClick={handleWA} disabled={submitting}
+                        style={{ padding: "11px", borderRadius: 9, fontSize: 13, fontWeight: 700, background: "#25d366", color: "#fff", border: "none", display: "flex", alignItems: "center", justifyContent: "center", gap: 7, transition: "all 0.18s", opacity: submitting ? 0.7 : 1, cursor: submitting ? "wait" : "pointer" }}
+                        onMouseEnter={e => { if (!submitting) { e.currentTarget.style.background = "#1fbb5b"; e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 6px 18px rgba(37,211,102,0.3)"; } }}
                         onMouseLeave={e => { e.currentTarget.style.background = "#25d366"; e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = ""; }}>
-                        <MessageSquare size={13} /> WhatsApp
+                        <MessageSquare size={13} /> {submitting ? "Sending…" : "WhatsApp"}
                       </button>
-                      {/* <button className="btn" onClick={handleEmail}
-                        style={{ padding: "11px", borderRadius: 9, fontSize: 13, fontWeight: 700, background: `linear-gradient(90deg,${C.blue},#1A7AC0)`, color: "#fff", border: "none", display: "flex", alignItems: "center", justifyContent: "center", gap: 7, boxShadow: C.blueGlow, transition: "all 0.18s" }}
-                        onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = isDark ? "0 0 24px rgba(43,159,232,0.4)" : "0 6px 20px rgba(43,159,232,0.3)"; }}
+                      <button className="btn" onClick={handleSubmit} disabled={submitting}
+                        style={{ padding: "11px", borderRadius: 9, fontSize: 13, fontWeight: 700, background: `linear-gradient(90deg,${C.blue},#1A7AC0)`, color: "#fff", border: "none", display: "flex", alignItems: "center", justifyContent: "center", gap: 7, boxShadow: C.blueGlow, transition: "all 0.18s", opacity: submitting ? 0.7 : 1, cursor: submitting ? "wait" : "pointer" }}
+                        onMouseEnter={e => { if (!submitting) { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = isDark ? "0 0 24px rgba(43,159,232,0.4)" : "0 6px 20px rgba(43,159,232,0.3)"; } }}
                         onMouseLeave={e => { e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = C.blueGlow; }}>
-                        <Mail size={13} /> Send Email
-                      </button> */}
+                        <Check size={13} /> {submitting ? "Submitting…" : "Submit"}
+                      </button>
                     </div>
+                    {apiError && <div className="ferr" style={{ justifyContent: "center" }}><AlertCircle size={11} />{apiError}</div>}
                     <p style={{ fontSize: 11, color: C.inkFaint, textAlign: "center" }}>WhatsApp opens a chat · Email opens Gmail to {CONTACT_EMAIL}</p>
                   </div>
                 </div>
